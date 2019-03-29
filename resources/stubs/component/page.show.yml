@@ -1,0 +1,12 @@
+extends: _.page.show
+options:
+  data: {{ name }}
+  fields:
+  {% for attribute in attributes %}
+    - {{ attribute.name }}
+  {% endfor %}
+  
+  actions:
+    resource:
+      - user.resource.update
+      - _.resource.delete

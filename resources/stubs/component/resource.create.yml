@@ -1,0 +1,5 @@
+extends: _.resource.create
+icon: /amethyst/assets/{{ name }}.svg
+options:
+  data: {{ name }}
+  form: {{ name }}.resource.form

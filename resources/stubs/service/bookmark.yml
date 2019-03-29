@@ -1,0 +1,5 @@
+label: {{ name }}
+icon: /amethyst/assets/{{ name }}.svg
+type: bookmark
+options:
+  url: /{{ name }}
