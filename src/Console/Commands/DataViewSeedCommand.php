@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Railken\Amethyst\Managers\DataViewManager;
 use Railken\Template\Generators\TextGenerator;
+use Doctrine\Common\Inflector\Inflector;
 
 class DataViewSeedCommand extends Command
 {
@@ -44,10 +45,12 @@ class DataViewSeedCommand extends Command
     {
         $manager = new DataViewManager();
         $generator = new TextGenerator();
-
+        $inflector = new Inflector();
+        
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
                 'name'       => $name,
+                'api'        => $inflector->pluralize($name),
                 'attributes' => $attributes,
             ]);
 
