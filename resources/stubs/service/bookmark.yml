@@ -1,5 +1,5 @@
 label: {{ name }}
-icon: /amethyst/assets/{{ name }}.svg
+icon: /assets/amethyst/{{ name }}-icon.svg
 type: bookmark
 options:
   url: /{{ name }}

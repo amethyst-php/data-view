@@ -50,7 +50,7 @@ class DataViewSeedCommand extends Command
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
                 'name'       => $name,
-                'api'        => $inflector->pluralize($name),
+                'api'        => "/admin/".$inflector->pluralize($name),
                 'attributes' => $attributes,
             ]);
 

@@ -1,0 +1,18 @@
+extends: data-view-resource-show
+icon: /assets/amethyst/{{ name }}-icon.svg
+options:
+  data: {{ name }}
+  api: {{ api }}
+  attributes:{% for attribute in attributes %}
+
+    {{ attribute.name }}:
+      name: {{ attribute.name }}
+      extends: data-view-attribute-show
+      options:
+        size: 6
+  {% endfor %}actions:
+    resource:
+      update:
+        extends: {{ name }}-resource-update
+      delete:
+        extends: {{ name }}-resource-delete

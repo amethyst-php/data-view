@@ -1,12 +1,8 @@
-extends: _.page.show
+extends: data-view-page-show
+icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
-  fields:
-  {% for attribute in attributes %}
-    - {{ attribute.name }}
-  {% endfor %}
-  
-  actions:
-    resource:
-      - user.resource.update
-      - _.resource.delete
+  api: {{ api }}
+  sections:
+    main: 
+      extends: data-view-resource-show

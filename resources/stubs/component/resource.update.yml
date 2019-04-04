@@ -1,5 +1,13 @@
-extends: _.resource.update
-icon: /amethyst/assets/{{ name }}.svg
+extends: data-view-resource-update
+icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
-  form: {{ name }}.resource.form
+  api: {{ api }}
+  attributes:{% for attribute in attributes %}
+  
+    {{ attribute.name }}:
+      name: {{ attribute.name }}
+      extends: data-view-attribute-input
+      options:
+        size: 6
+  {% endfor %}
