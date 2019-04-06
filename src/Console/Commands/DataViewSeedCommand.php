@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Railken\Amethyst\Managers\DataViewManager;
 use Railken\Template\Generators\TextGenerator;
 use Doctrine\Common\Inflector\Inflector;
+use Railken\Amethyst\Common\Helper;
 
 class DataViewSeedCommand extends Command
 {
@@ -18,31 +19,43 @@ class DataViewSeedCommand extends Command
     protected $signature = 'amethyst:data-view:seed';
 
     /**
+     * @var \Railken\Amethyst\Common\Helper
+     */
+    protected $helper;
+
+    /**
+     * Create a new instance
+     */
+    public function __construct()
+    {
+        $this->helper = new Helper();
+
+        parent::__construct();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
     {
-        $helper = new \Railken\Amethyst\Common\Helper();
-
-        return $helper->getData()->map(function ($data) use ($helper) {
-            $name = $helper->getNameDataByModel(Arr::get($data, 'model'));
-            $attributes = app(Arr::get($data, 'manager'))->getAttributes()->map(function ($attribute) {
-                return [
-                    'name' => $attribute->getName(),
-                    'type' => preg_replace('/Attribute$/', '', (new \ReflectionClass($attribute))->getShortName()),
-                ];
-            });
-
-            $this->generate($name, $attributes, 'component');
-            $this->generate($name, $attributes, 'routes');
-            $this->generate($name, $attributes, 'service');
+        return $this->helper->getData()->map(function ($data) {
+            $this->generate($data, 'component');
+            $this->generate($data, 'routes');
+            $this->generate($data, 'service');
         });
     }
 
-    public function generate(string $name, $attributes, string $type)
+    public function generate($data, string $type)
     {
+        $name = $this->helper->getNameDataByModel(Arr::get($data, 'model'));
+
+        $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
+        $fillableAttributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes()->filter(function ($attribute) {
+            return $attribute->getFillable();
+        }));
+
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
@@ -52,6 +65,7 @@ class DataViewSeedCommand extends Command
                 'name'       => $name,
                 'api'        => "/admin/".$inflector->pluralize($name),
                 'attributes' => $attributes,
+                'fillableAttributes' => $fillableAttributes
             ]);
 
             $fullname = $name.'.'.basename($filename, '.yml');
@@ -59,5 +73,15 @@ class DataViewSeedCommand extends Command
             $view = $manager->findOrCreateOrFail(['name' => $fullname, 'type' => $type])->getResource();
             $manager->updateOrFail($view, ['config' => $configuration]);
         }
+    }
+
+    public function serializeAttributes($attributes)
+    {
+        return $attributes->map(function ($attribute) {
+            return [
+                'name' => $attribute->getName(),
+                'type' => preg_replace('/Attribute$/', '', (new \ReflectionClass($attribute))->getShortName()),
+            ];
+        });
     }
 }
