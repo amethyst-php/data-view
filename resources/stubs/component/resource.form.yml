@@ -2,9 +2,11 @@ extends: _.resource.form
 options:
   data: {{ name }}
   sections:
-    main:{% for attribute in attributes %}
-    
+    main:
+{% for attribute in attributes %}
+
       {{ attribute.name }}:
         type: {{ attribute.type }}
         size: 6
-    {% endfor %}
+
+{% endfor %}

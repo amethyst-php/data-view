@@ -5,4 +5,28 @@ options:
   api: {{ api }}
   sections:
     main: 
-      extends: data-view-resource-show
+      extends: {{ name }}-resource-show
+{% for relation in relations %}{% if relation.type == 'HasMany' or relation.type == 'MorphMany' %}
+
+    {{ relation.key }}:
+      extends: {{ relation.data }}-resource-index
+      options:
+        attributes:
+          {{ relation.foreignKey }}:
+            fixed: "${parent.id}"
+
+{% for scope in relation.scope %}
+          
+          {{ scope.column }}:
+            fixed: "{{ scope.value }}"
+
+{% endfor %}
+
+{% endif %}{% endfor %}
+
+  actions:
+    resource:
+      update:
+        extends: {{ name }}-resource-update
+      delete:
+        extends: {{ name }}-resource-delete

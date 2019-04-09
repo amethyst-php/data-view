@@ -8,6 +8,8 @@ use Railken\Amethyst\Managers\DataViewManager;
 use Railken\Template\Generators\TextGenerator;
 use Doctrine\Common\Inflector\Inflector;
 use Railken\Amethyst\Common\Helper;
+use Railken\EloquentMapper\Mapper;
+use Illuminate\Support\Collection;
 
 class DataViewSeedCommand extends Command
 {
@@ -33,7 +35,7 @@ class DataViewSeedCommand extends Command
         parent::__construct();
     }
 
-    /**
+    /**con ubuntu poi è peggio, il rischio di corruzione files è 
      * Execute the console command.
      *
      * @return mixed
@@ -65,7 +67,8 @@ class DataViewSeedCommand extends Command
                 'name'       => $name,
                 'api'        => "/admin/".$inflector->pluralize($name),
                 'attributes' => $attributes,
-                'fillableAttributes' => $fillableAttributes
+                'fillableAttributes' => $fillableAttributes,
+                'relations' => $this->getRelationsByClassModel(Arr::get($data, 'model'))
             ]);
 
             $fullname = $name.'.'.basename($filename, '.yml');
@@ -73,6 +76,16 @@ class DataViewSeedCommand extends Command
             $view = $manager->findOrCreateOrFail(['name' => $fullname, 'type' => $type])->getResource();
             $manager->updateOrFail($view, ['config' => $configuration]);
         }
+    }   
+
+    public function getRelationsByClassModel(string $classModel)
+    {
+        return Collection::make(Mapper::relations($classModel))->map(function ($relation, $key) {
+            return array_merge($relation->toArray(), [
+                'key'  => $key,
+                'data' => $this->helper->getNameDataByModel($relation->model),
+            ]);
+        });
     }
 
     public function serializeAttributes($attributes)
