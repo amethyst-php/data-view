@@ -10,6 +10,7 @@ use Doctrine\Common\Inflector\Inflector;
 use Railken\Amethyst\Common\Helper;
 use Railken\EloquentMapper\Mapper;
 use Illuminate\Support\Collection;
+use Railken\Lem\Attributes;
 
 class DataViewSeedCommand extends Command
 {
@@ -71,7 +72,9 @@ class DataViewSeedCommand extends Command
                 'relations' => $this->getRelationsByClassModel(Arr::get($data, 'model'))
             ]);
 
-            $fullname = $name.'.'.basename($filename, '.yml');
+            $configuration = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
+            
+            $fullname = str_replace(".", "-", $name.'.'.basename($filename, '.yml'));
 
             $view = $manager->findOrCreateOrFail(['name' => $fullname, 'type' => $type])->getResource();
             $manager->updateOrFail($view, ['config' => $configuration]);
@@ -88,12 +91,33 @@ class DataViewSeedCommand extends Command
         });
     }
 
+    public function getRelationByKeyName(string $classModel, string $keyName)
+    {
+        return $this->getRelationsByClassModel($classModel)->filter(function ($item) use ($keyName) {
+            return $item['key'] === $keyName;
+        })->first();
+    }
+
     public function serializeAttributes($attributes)
     {
         return $attributes->map(function ($attribute) {
+
+            $options = [];
+
+            if ($attribute instanceof Attributes\BelongsToAttribute || $attribute instanceof Attributes\MorphToAttribute) {
+                $options['data'] = $this->getRelationByKeyName($attribute->getManager()->getEntity(), $attribute->getRelationName())['data'];
+            }
+
+            if ($attribute instanceof Attributes\MorphToAttribute) {
+                $options['relationTypes'] = $attribute->getManager()->getAttributes()->filter(function ($attr) use ($attribute) {
+                    return $attr->getName() === $attribute->getRelationKey();
+                })->first()->getOptions();
+            }
+
             return [
                 'name' => $attribute->getName(),
-                'type' => preg_replace('/Attribute$/', '', (new \ReflectionClass($attribute))->getShortName()),
+                'type' => $attribute->getType(),
+                'options' => $options
             ];
         });
     }

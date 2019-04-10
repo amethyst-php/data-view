@@ -26,7 +26,7 @@ options:
 
   actions:
     resource:
-      update:
-        extends: {{ name }}-resource-update
       delete:
         extends: {{ name }}-resource-delete
+      update:
+        extends: {{ name }}-resource-update

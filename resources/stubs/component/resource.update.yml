@@ -3,11 +3,30 @@ icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
   api: {{ api }}
-  attributes:{% for attribute in fillableAttributes %}
+  attributes:
+{% for attribute in fillableAttributes %}
   
     {{ attribute.name }}:
       name: {{ attribute.name }}
       extends: data-view-attribute-input
       options:
         size: 6
+
+        {% if attribute.type == 'BelongsTo' %}
+
+        default:
+          view: {{ attribute.options.data }}-resource-update
+          create: {{ attribute.options.data }}-resource-create
+          update: {{ attribute.options.data }}-resource-update
+
+        {% endif %}
+
+        {% if attribute.type == 'MorphTo' %}{% for relationType in attribute.options.relationTypes %}
+
+        {{ relationType }}:
+          view: {{ relationType }}-resource-update
+          create: {{ relationType }}-resource-create
+          update: {{ relationType }}-resource-update
+
+        {% endfor %}{% endif %}
   {% endfor %}
