@@ -2,15 +2,15 @@
 
 namespace Railken\Amethyst\Console\Commands;
 
+use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Railken\Amethyst\Managers\DataViewManager;
-use Railken\Template\Generators\TextGenerator;
-use Doctrine\Common\Inflector\Inflector;
-use Railken\Amethyst\Common\Helper;
-use Railken\EloquentMapper\Mapper;
 use Illuminate\Support\Collection;
+use Railken\Amethyst\Common\Helper;
+use Railken\Amethyst\Managers\DataViewManager;
+use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
+use Railken\Template\Generators\TextGenerator;
 
 class DataViewSeedCommand extends Command
 {
@@ -27,7 +27,7 @@ class DataViewSeedCommand extends Command
     protected $helper;
 
     /**
-     * Create a new instance
+     * Create a new instance.
      */
     public function __construct()
     {
@@ -36,7 +36,7 @@ class DataViewSeedCommand extends Command
         parent::__construct();
     }
 
-    /**con ubuntu poi è peggio, il rischio di corruzione files è 
+    /**con ubuntu poi è peggio, il rischio di corruzione files è
      * Execute the console command.
      *
      * @return mixed
@@ -58,23 +58,23 @@ class DataViewSeedCommand extends Command
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
-        
+
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
                 'name'       => $name,
-                'api'        => "/admin/".$inflector->pluralize($name),
+                'api'        => '/admin/'.$inflector->pluralize($name),
                 'attributes' => $attributes,
-                'relations' => $this->getRelationsByClassModel(Arr::get($data, 'model'))
+                'relations'  => $this->getRelationsByClassModel(Arr::get($data, 'model')),
             ]);
 
             $configuration = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
-            
-            $fullname = str_replace(".", "-", $name.'.'.basename($filename, '.yml'));
+
+            $fullname = str_replace('.', '-', $name.'.'.basename($filename, '.yml'));
 
             $view = $manager->findOrCreateOrFail(['name' => $fullname, 'type' => $type])->getResource();
             $manager->updateOrFail($view, ['config' => $configuration]);
         }
-    }   
+    }
 
     public function getRelationsByClassModel(string $classModel)
     {
@@ -96,7 +96,6 @@ class DataViewSeedCommand extends Command
     public function serializeAttributes($attributes)
     {
         return $attributes->map(function ($attribute) {
-
             $options = [];
 
             if ($attribute instanceof Attributes\BelongsToAttribute || $attribute instanceof Attributes\MorphToAttribute) {
@@ -110,11 +109,11 @@ class DataViewSeedCommand extends Command
             }
 
             return [
-                'name' => $attribute->getName(),
-                'type' => $attribute->getType(),
+                'name'     => $attribute->getName(),
+                'type'     => $attribute->getType(),
                 'fillable' => $attribute->getFillable(),
                 'required' => $attribute->getRequired(),
-                'options' => $options
+                'options'  => $options,
             ];
         });
     }
