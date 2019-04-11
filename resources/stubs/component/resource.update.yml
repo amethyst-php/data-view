@@ -4,14 +4,13 @@ options:
   data: {{ name }}
   api: {{ api }}
   attributes:
-{% for attribute in fillableAttributes %}
+{% for attribute in attributes %}{% if attribute.fillable %}
   
     {{ attribute.name }}:
       name: {{ attribute.name }}
       extends: data-view-attribute-input
       options:
         size: 6
-
         {% if attribute.type == 'BelongsTo' %}
 
         default:
@@ -29,4 +28,4 @@ options:
           update: {{ relationType }}-resource-update
 
         {% endfor %}{% endif %}
-  {% endfor %}
+{% endif %}{% endfor %}

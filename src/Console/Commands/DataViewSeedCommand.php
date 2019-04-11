@@ -55,10 +55,6 @@ class DataViewSeedCommand extends Command
         $name = $this->helper->getNameDataByModel(Arr::get($data, 'model'));
 
         $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
-        $fillableAttributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes()->filter(function ($attribute) {
-            return $attribute->getFillable();
-        }));
-
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
@@ -68,7 +64,6 @@ class DataViewSeedCommand extends Command
                 'name'       => $name,
                 'api'        => "/admin/".$inflector->pluralize($name),
                 'attributes' => $attributes,
-                'fillableAttributes' => $fillableAttributes,
                 'relations' => $this->getRelationsByClassModel(Arr::get($data, 'model'))
             ]);
 
@@ -117,6 +112,8 @@ class DataViewSeedCommand extends Command
             return [
                 'name' => $attribute->getName(),
                 'type' => $attribute->getType(),
+                'fillable' => $attribute->getFillable(),
+                'required' => $attribute->getRequired(),
                 'options' => $options
             ];
         });
