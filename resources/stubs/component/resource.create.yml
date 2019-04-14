@@ -4,7 +4,7 @@ options:
   data: {{ name }}
   api: {{ api }}
   attributes:
-{% for attribute in attributes %}{% if attribute.required and attribute.fillable %}
+{% for attribute in attributes %}{% if attribute.fillable %}
   
     {{ attribute.name }}:
       name: {{ attribute.name }}
