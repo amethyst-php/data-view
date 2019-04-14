@@ -14,20 +14,14 @@ options:
         attributes:
           {{ relation.foreignKey }}:
             name: {{ relation.foreignKey }}
-            extends: data-view-attribute-input
+            include: {{ relation.data }}.attributes.{{ relation.foreignKey }}
             fixed: "${parent.id}"
-            options:
-              default:
-                view: {{ relation.data }}-resource-update
-                create: {{ relation.data }}-resource-create
-                update: {{ relation.data }}-resource-update
-
 
 {% for scope in relation.scope %}
           
           {{ scope.column }}:
             name: {{ scope.column }}
-            extends: data-view-attribute-input
+            include: {{ relation.data }}.attributes.{{ scope.column }}
             fixed: "{{ scope.value }}"
 
 {% endfor %}

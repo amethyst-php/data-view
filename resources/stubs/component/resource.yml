@@ -1,0 +1,25 @@
+options:
+  data: {{ name }}
+  api: {{ api }}
+  attributes:
+{% for attribute in attributes %}
+  
+    {{ attribute.name }}:
+      name: {{ attribute.name }}
+      options:
+        {% if attribute.type == 'BelongsTo' %}
+
+        {{ attribute.options.data }}:
+          actions:
+            update: {{ attribute.options.data }}-resource-create-or-update
+
+        {% endif %}
+
+        {% if attribute.type == 'MorphTo' %}{% for relationType in attribute.options.relationTypes %}
+
+        {{ relationType }}:
+          actions:
+            update: {{ relationType }}-resource-create-or-update
+
+        {% endfor %}{% endif %}
+{% endfor %}
