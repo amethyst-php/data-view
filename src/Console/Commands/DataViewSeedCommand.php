@@ -8,10 +8,10 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Railken\Amethyst\Common\Helper;
 use Railken\Amethyst\Managers\DataViewManager;
+use Railken\Amethyst\Models;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
-use Railken\Amethyst\Models;
 
 class DataViewSeedCommand extends Command
 {
@@ -73,12 +73,12 @@ class DataViewSeedCommand extends Command
             $fullname = str_replace('.', '-', $name.'.'.basename($filename, '.yml'));
 
             $view = $manager->findOrCreateOrFail([
-                'name' => $fullname, 
-                'type' => $type,
-                'permission' => "data-view.".$fullname
+                'name'       => $fullname,
+                'type'       => $type,
+                'permission' => 'data-view.'.$fullname,
             ])->getResource();
 
-            Models\Permission::firstOrCreate(['name' => "data-view.".$fullname, 'guard_name' => 'web']);
+            Models\Permission::firstOrCreate(['name' => 'data-view.'.$fullname, 'guard_name' => 'web']);
 
             $manager->updateOrFail($view, ['config' => $configuration]);
         }
