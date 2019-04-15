@@ -15,6 +15,7 @@ class DataViewServiceProvider extends CommonServiceProvider
         parent::register();
 
         $this->app->register(\Railken\Template\TemplateServiceProvider::class);
+        $this->app->register(\Railken\Amethyst\Providers\PermissionServiceProvider::class);
     }
 
     /**

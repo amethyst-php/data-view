@@ -6,6 +6,7 @@
     "require": {
         "php": ">=7.1",
         "railken/amethyst-common": "0.1.*",
+        "railken/amethyst-permission": "0.1.*",
         "railken/template": "1.0.*"
     },
     "require-dev": {
