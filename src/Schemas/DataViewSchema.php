@@ -23,7 +23,6 @@ class DataViewSchema extends Schema
                 ->setRequired(true),
             Attributes\LongTextAttribute::make('description'),
             Attributes\YamlAttribute::make('config'),
-            Attributes\TextAttribute::make('permission'),
             Attributes\BooleanAttribute::make('enabled'),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),

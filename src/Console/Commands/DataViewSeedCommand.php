@@ -75,10 +75,7 @@ class DataViewSeedCommand extends Command
             $view = $manager->findOrCreateOrFail([
                 'name'       => $fullname,
                 'type'       => $type,
-                'permission' => 'data-view.'.$fullname,
             ])->getResource();
-
-            Models\Permission::firstOrCreate(['name' => 'data-view.'.$fullname, 'guard_name' => 'web']);
 
             $manager->updateOrFail($view, ['config' => $configuration]);
         }

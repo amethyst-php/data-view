@@ -19,7 +19,6 @@ class DataViewFaker extends Faker
         $bag->set('name', $faker->name);
         $bag->set('type', 'component');
         $bag->set('description', $faker->text);
-        $bag->set('permission', 'foo');
         $bag->set('config', 'foo');
         $bag->set('enabled', 1);
 
