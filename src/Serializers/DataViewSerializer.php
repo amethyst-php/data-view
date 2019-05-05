@@ -3,10 +3,10 @@
 namespace Railken\Amethyst\Serializers;
 
 use Illuminate\Support\Collection;
+use Railken\Amethyst\Services\PermissionService;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Serializer;
 use Symfony\Component\Yaml\Yaml;
-use Railken\Amethyst\Services\PermissionService;
 
 class DataViewSerializer extends Serializer
 {
@@ -30,20 +30,16 @@ class DataViewSerializer extends Serializer
             $permission = app(PermissionService::class)->findFirstPermissionByPolicyCached($agent, $config['permissions'][0]);
 
             if ($permission && isset($config['options']['attributes'])) {
-
-                $attrs = explode(",", $permission->pivot->attribute);
+                $attrs = explode(',', $permission->pivot->attribute);
                 foreach ($config['options']['attributes'] as $key => &$attribute) {
-
-                    if (!in_array($attribute['name'], $attrs)) {
+                    if (!in_array($attribute['name'], $attrs, true)) {
                         unset($config['options']['attributes'][$key]);
                     }
                 }
-
             }
         }
 
         $bag->set('processed', $config);
-
 
         return $bag;
     }

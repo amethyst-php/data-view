@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Railken\Amethyst\Common\Helper;
 use Railken\Amethyst\Managers\DataViewManager;
-use Railken\Amethyst\Models;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
@@ -73,8 +72,8 @@ class DataViewSeedCommand extends Command
             $fullname = str_replace('.', '-', $name.'.'.basename($filename, '.yml'));
 
             $view = $manager->findOrCreateOrFail([
-                'name'       => $fullname,
-                'type'       => $type,
+                'name' => $fullname,
+                'type' => $type,
             ])->getResource();
 
             $manager->updateOrFail($view, ['config' => $configuration]);

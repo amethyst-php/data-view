@@ -4,9 +4,6 @@ namespace Railken\Amethyst\Providers;
 
 use Railken\Amethyst\Common\CommonServiceProvider;
 use Railken\Amethyst\Console\Commands\DataViewSeedCommand;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Config;
-use Railken\Amethyst\Api\Support\Router;
 use Railken\Amethyst\Models\ModelHasPermission;
 use Railken\Amethyst\Observers\DataViewPermissionObserver;
 
