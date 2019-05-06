@@ -8,9 +8,9 @@ use Railken\Amethyst\Models\Permission;
 
 class DataViewPermissionObserver
 {
-    public function getPermissionId()
+    public function getPermission()
     {
-        return Permission::where('name', 'data-view.show')->first()->id;
+        return Permission::where('name', 'data-view.show')->first();
     }
 
     public function getValuesByAction(string $action, string $data): array
@@ -63,6 +63,12 @@ class DataViewPermissionObserver
     {
         // When a new permission is added, add automatically the data-view corrisponding
 
+        $permission = $this->getPermission();
+
+        if (!$permission) {
+            return;
+        }
+
         list($data, $action) = explode('.', $modelHasPermission->permission->name);
 
         if ($data === 'data-view') {
@@ -77,7 +83,7 @@ class DataViewPermissionObserver
 
         foreach ($dataViews as $dataView) {
             ModelHasPermission::firstOrCreate([
-                'permission_id' => $this->getPermissionId(),
+                'permission_id' => $permission->id,
                 'object_type'   => 'data-view',
                 'object_id'     => $dataView->id,
                 'model_type'    => $modelHasPermission->model_type,
