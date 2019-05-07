@@ -24,7 +24,20 @@ options:
           {{ scope.column }}:
             name: {{ scope.column }}
             include: {{ relation.data }}.attributes.{{ scope.column }}
-            fixed: "{{ scope.value }}"
+
+            {% if scope.value is iterable %}
+            
+            fixed: 
+
+              {% for val in scope.value %}
+              - '"{{ val }}"'
+              {% endfor %}
+
+            {% else %}
+            
+            fixed: '"{{ scope.value }}"'
+            
+            {% endif %}
 
 {% endfor %}
 
