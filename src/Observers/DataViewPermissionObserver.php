@@ -56,8 +56,6 @@ class DataViewPermissionObserver
      * Handle the ModelHasPermission "created" event.
      *
      * @param \Railken\Amethyst\Models\ModelHasPermission $modelHasPermission
-     *
-     * @return void
      */
     public function created(ModelHasPermission $modelHasPermission)
     {
@@ -97,8 +95,6 @@ class DataViewPermissionObserver
      * Handle the ModelHasPermission "deleted" event.
      *
      * @param \Railken\Amethyst\Models\ModelHasPermission $modelHasPermission
-     *
-     * @return void
      */
     public function deleted(ModelHasPermission $modelHasPermission)
     {
