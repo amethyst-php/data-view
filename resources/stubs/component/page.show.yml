@@ -30,12 +30,12 @@ options:
             fixed: 
 
               {% for val in scope.value %}
-              - '"{{ val }}"'
+              - "{{ val }}"
               {% endfor %}
 
             {% else %}
             
-            fixed: '"{{ scope.value }}"'
+            fixed: "{{ scope.value }}"
             
             {% endif %}
 
