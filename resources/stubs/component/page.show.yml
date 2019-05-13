@@ -13,17 +13,17 @@ options:
     {{ relation.key }}:
       extends: {{ relation.data }}-resource-index
       options:
-        attributes:
+        components:
           {{ relation.foreignKey }}:
             name: {{ relation.foreignKey }}
-            include: {{ relation.data }}.attributes.{{ relation.foreignKey }}
+            include: {{ relation.data }}.components.{{ relation.foreignKey }}
             fixed: "${parent.id}"
 
 {% for scope in relation.scope %}
           
           {{ scope.column }}:
             name: {{ scope.column }}
-            include: {{ relation.data }}.attributes.{{ scope.column }}
+            include: {{ relation.data }}.components.{{ scope.column }}
 
             {% if scope.value is iterable %}
             

@@ -5,14 +5,14 @@ icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
   api: {{ api }}
-  attributes:
+  components:
 
 {% for attribute in attributes %}
 
     {{ attribute.name }}:
       name: {{ attribute.name }}
       extends: data-view-attribute-show
-      include: {{ name }}.attributes.{{ attribute.name }}
+      include: {{ name }}.components.{{ attribute.name }}
         
 {% endfor %}
 

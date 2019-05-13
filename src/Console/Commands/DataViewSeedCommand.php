@@ -10,6 +10,7 @@ use Railken\Amethyst\Common\Helper;
 use Railken\Amethyst\Managers\DataViewManager;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
+use Railken\EloquentMapper\RelationFinder;
 use Railken\Template\Generators\TextGenerator;
 
 class DataViewSeedCommand extends Command
@@ -59,12 +60,14 @@ class DataViewSeedCommand extends Command
         $generator = new TextGenerator();
         $inflector = new Inflector();
 
+        $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
+
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
                 'name'       => $name,
                 'api'        => '/admin/'.$inflector->pluralize($name),
                 'attributes' => $attributes,
-                'relations'  => $this->getRelationsByClassModel(Arr::get($data, 'model')),
+                'relations'  => $relations,
             ]);
 
             $configuration = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
@@ -121,4 +124,21 @@ class DataViewSeedCommand extends Command
             ];
         });
     }
+
+    public function parseRelations($relations)
+    {
+        foreach ($relations as $k => $relation) {
+            $relations[$k] = $this->parseRelation($relation);
+        }
+
+        return $relations;
+    }
+
+    public function parseRelation($relation)
+    {
+        $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
+
+        return $relation;  
+    }
+
 }

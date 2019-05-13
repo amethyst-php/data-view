@@ -2,11 +2,12 @@ icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
   api: {{ api }}
-  attributes:
+  components:
 {% for attribute in attributes %}
   
     {{ attribute.name }}:
       name: {{ attribute.name }}
+      type: attribute
       options:
         {% if attribute.type == 'BelongsTo' %}
 
@@ -24,3 +25,10 @@ options:
 
         {% endfor %}{% endif %}
 {% endfor %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+  
+    {{ relation.name }}:
+      name: {{ relation.name }}
+      type: relation
+
+{% endif %}{% endfor %}

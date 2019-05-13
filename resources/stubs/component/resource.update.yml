@@ -5,14 +5,26 @@ icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
   api: {{ api }}
-  attributes:
+  components:
 {% for attribute in attributes %}{% if attribute.fillable %}
   
     {{ attribute.name }}:
       name: {{ attribute.name }}
+      type: attribute
       extends: data-view-attribute-input
-      include: {{ name }}.attributes.{{ attribute.name }}
+      include: {{ name }}.components.{{ attribute.name }}
       options:
         size: 6
+
+{% endif %}{% endfor %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+  
+    {{ relation.name }}:
+      name: {{ relation.name }}
+      type: relation
+      extends: data-view-attribute-input
+      include: {{ name }}.components.{{ relation.name }}
+      options:
+        size: 12
 
 {% endif %}{% endfor %}
