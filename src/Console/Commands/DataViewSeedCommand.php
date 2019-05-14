@@ -6,11 +6,9 @@ use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Railken\Amethyst\Common\Helper;
 use Railken\Amethyst\Managers\DataViewManager;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
-use Railken\EloquentMapper\RelationFinder;
 use Railken\Template\Generators\TextGenerator;
 
 class DataViewSeedCommand extends Command
@@ -32,7 +30,7 @@ class DataViewSeedCommand extends Command
         return app('amethyst')->getData()->map(function ($data) {
             $name = app('amethyst')->getNameDataByModel(Arr::get($data, 'model'));
 
-            $this->info(sprintf("Generating data-view:%s", $name));
+            $this->info(sprintf('Generating data-view:%s', $name));
 
             $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
             $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
@@ -45,11 +43,9 @@ class DataViewSeedCommand extends Command
 
     public function generate($name, $data, string $type, $attributes, $relations)
     {
-
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
-
 
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
@@ -127,7 +123,6 @@ class DataViewSeedCommand extends Command
     {
         $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
 
-        return $relation;  
+        return $relation;
     }
-
 }
