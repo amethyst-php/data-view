@@ -22,21 +22,6 @@ class DataViewSeedCommand extends Command
      */
     protected $signature = 'amethyst:data-view:seed';
 
-    /**
-     * @var \Railken\Amethyst\Common\Helper
-     */
-    protected $helper;
-
-    /**
-     * Create a new instance.
-     */
-    public function __construct()
-    {
-        $this->helper = new Helper();
-
-        parent::__construct();
-    }
-
     /**con ubuntu poi è peggio, il rischio di corruzione files è
      * Execute the console command.
      *
@@ -44,23 +29,27 @@ class DataViewSeedCommand extends Command
      */
     public function handle()
     {
-        return $this->helper->getData()->map(function ($data) {
-            $this->generate($data, 'component');
-            $this->generate($data, 'routes');
-            $this->generate($data, 'service');
+        return app('amethyst')->getData()->map(function ($data) {
+            $name = app('amethyst')->getNameDataByModel(Arr::get($data, 'model'));
+
+            $this->info(sprintf("Generating data-view:%s", $name));
+
+            $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
+            $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
+
+            $this->generate($name, $data, 'component', $attributes, $relations);
+            $this->generate($name, $data, 'routes', $attributes, $relations);
+            $this->generate($name, $data, 'service', $attributes, $relations);
         });
     }
 
-    public function generate($data, string $type)
+    public function generate($name, $data, string $type, $attributes, $relations)
     {
-        $name = $this->helper->getNameDataByModel(Arr::get($data, 'model'));
 
-        $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
 
-        $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
 
         foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
             $configuration = $generator->generateAndRender(file_get_contents($filename), [
@@ -88,7 +77,7 @@ class DataViewSeedCommand extends Command
         return Collection::make(Mapper::relations($classModel))->map(function ($relation, $key) {
             return array_merge($relation->toArray(), [
                 'key'  => $key,
-                'data' => $this->helper->getNameDataByModel($relation->model),
+                'data' => app('amethyst')->getNameDataByModel($relation->model),
             ]);
         });
     }
