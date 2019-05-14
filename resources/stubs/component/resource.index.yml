@@ -15,6 +15,17 @@ options:
       include: {{ name }}.components.{{ attribute.name }}
         
 {% endfor %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+  
+    {{ relation.name }}:
+      name: {{ relation.name }}
+      type: relation
+      extends: data-view-attribute-show
+      include: {{ name }}.components.{{ relation.name }}
+      options:
+        size: 12
+
+{% endif %}{% endfor %}
 
   actions:
     global:
