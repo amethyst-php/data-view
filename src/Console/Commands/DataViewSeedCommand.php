@@ -20,37 +20,66 @@ class DataViewSeedCommand extends Command
      */
     protected $signature = 'amethyst:data-view:seed';
 
-    /**con ubuntu poi è peggio, il rischio di corruzione files è
+    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
     {
-        return app('amethyst')->getData()->map(function ($data) {
+        $data = app('amethyst')->getData();
+
+        $bar = $this->output->createProgressBar($data->count());
+
+
+        $this->info('Generating data-views...');
+        $this->info('');
+
+        $bar->start();
+
+        $generator = new TextGenerator();
+
+        $componentFiles = collect(glob(__DIR__."/../../../resources/stubs/component/*"))->map(function ($file) use ($generator) {
+            return $generator->generateViewFile(file_get_contents($file));
+        });
+
+        $routesFiles = collect(glob(__DIR__."/../../../resources/stubs/route/*"))->map(function ($file) use ($generator) {
+            return $generator->generateViewFile(file_get_contents($file));
+        });
+        
+        $serviceFiles = collect(glob(__DIR__."/../../../resources/stubs/service/*"))->map(function ($file) use ($generator) {
+            return $generator->generateViewFile(file_get_contents($file));
+        });
+
+        $data->map(function ($data) use ($bar, $componentFiles, $routesFiles, $serviceFiles) {
             $name = app('amethyst')->getNameDataByModel(Arr::get($data, 'model'));
-
-            $this->info(sprintf('Generating data-view:%s', $name));
-
             $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
             $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
 
-            $this->generate($name, $data, 'component', $attributes, $relations);
-            $this->generate($name, $data, 'routes', $attributes, $relations);
-            $this->generate($name, $data, 'service', $attributes, $relations);
+            $this->generate($name, $data, 'component', $attributes, $relations, $componentFiles);
+            $this->generate($name, $data, 'routes', $attributes, $relations, $routesFiles);
+            $this->generate($name, $data, 'service', $attributes, $relations, $serviceFiles);
+            $bar->advance();
         });
+
+        $bar->finish();
+        $this->info('');
+        $this->info('');
+        $this->info('Done!');
     }
 
-    public function generate($name, $data, string $type, $attributes, $relations)
+    public function generate($name, $data, string $type, $attributes, $relations, $files)
     {
+
         $manager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
+        $api = '/admin/'.$inflector->pluralize($name);
 
-        foreach (glob(__DIR__."/../../../resources/stubs/{$type}/*") as $filename) {
-            $configuration = $generator->generateAndRender(file_get_contents($filename), [
+        foreach ($files as $filename) {
+            $configuration = $generator->render($filename, [
                 'name'       => $name,
-                'api'        => '/admin/'.$inflector->pluralize($name),
+                'api'        => $api,
                 'attributes' => $attributes,
                 'relations'  => $relations,
             ]);
