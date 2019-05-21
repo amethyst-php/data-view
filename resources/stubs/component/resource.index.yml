@@ -15,7 +15,7 @@ options:
       include: {{ name }}.components.{{ attribute.name }}
         
 {% endfor %}
-{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
   
     {{ relation.name }}:
       name: {{ relation.name }}

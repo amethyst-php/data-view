@@ -14,7 +14,7 @@ options:
       extends: data-view-attribute-show
       include: {{ name }}.components.{{ attribute.name }}
 {% endfor %}
-{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
   
     {{ relation.name }}:
       name: {{ relation.name }}
@@ -25,3 +25,10 @@ options:
         size: 12
 
 {% endif %}{% endfor %}
+
+  actions:
+    resource:
+      delete:
+        extends: data-view-{{ name }}-resource-delete
+      update:
+        extends: data-view-{{ name }}-resource-update

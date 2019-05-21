@@ -40,12 +40,39 @@ options:
             {% endif %}
 
 {% endfor %}
+{% endif %}
+{% if relation.type == 'HasOne' or relation.type == 'MorphOne' %}
 
-{% endif %}{% endfor %}
+    {{ relation.key }}:
+      extends: {{ relation.data }}-resource-show-or-create
+      options:
+        extractor: {{ relation.key }}
+        components:
+          {{ relation.foreignKey }}:
+            name: {{ relation.foreignKey }}
+            include: {{ relation.data }}.components.{{ relation.foreignKey }}
+            fixed: "${parent.id}"
 
-  actions:
-    resource:
-      delete:
-        extends: {{ name }}-resource-delete
-      update:
-        extends: {{ name }}-resource-update
+{% for scope in relation.scope %}
+          
+          {{ scope.column }}:
+            name: {{ scope.column }}
+            include: {{ relation.data }}.components.{{ scope.column }}
+
+            {% if scope.value is iterable %}
+            
+            fixed: 
+
+              {% for val in scope.value %}
+              - "{{ val }}"
+              {% endfor %}
+
+            {% else %}
+            
+            fixed: "{{ scope.value }}"
+            
+            {% endif %}
+
+{% endfor %}
+{% endif %}
+{% endfor %}

@@ -39,16 +39,16 @@ class DataViewSeedCommand extends Command
 
         $generator = new TextGenerator();
 
-        $componentFiles = collect(glob(__DIR__."/../../../resources/stubs/component/*"))->map(function ($file) use ($generator) {
-            return $generator->generateViewFile(file_get_contents($file));
+        $componentFiles = collect(glob(__DIR__."/../../../resources/stubs/component/*"))->mapWithKeys(function ($file) use ($generator) {
+            return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
-        $routesFiles = collect(glob(__DIR__."/../../../resources/stubs/route/*"))->map(function ($file) use ($generator) {
-            return $generator->generateViewFile(file_get_contents($file));
+        $routesFiles = collect(glob(__DIR__."/../../../resources/stubs/routes/*"))->mapWithKeys(function ($file) use ($generator) {
+            return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
         
-        $serviceFiles = collect(glob(__DIR__."/../../../resources/stubs/service/*"))->map(function ($file) use ($generator) {
-            return $generator->generateViewFile(file_get_contents($file));
+        $serviceFiles = collect(glob(__DIR__."/../../../resources/stubs/service/*"))->mapWithKeys(function ($file) use ($generator) {
+            return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
         $data->map(function ($data) use ($bar, $componentFiles, $routesFiles, $serviceFiles) {
@@ -76,7 +76,7 @@ class DataViewSeedCommand extends Command
         $inflector = new Inflector();
         $api = '/admin/'.$inflector->pluralize($name);
 
-        foreach ($files as $filename) {
+        foreach ($files as $key => $filename) {
             $configuration = $generator->render($filename, [
                 'name'       => $name,
                 'api'        => $api,
@@ -86,7 +86,7 @@ class DataViewSeedCommand extends Command
 
             $configuration = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
 
-            $fullname = str_replace('.', '-', $name.'.'.basename($filename, '.yml'));
+            $fullname = str_replace('.', '-', $name.'.'.basename($key, '.yml'));
 
             $view = $manager->findOrCreateOrFail([
                 'name' => $fullname,

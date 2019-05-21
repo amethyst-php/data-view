@@ -17,7 +17,7 @@ options:
         size: 6
         
 {% endif %}{% endfor %}
-{% for relation in relations %}{% if relation.type == 'MorphToMany' %}
+{% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
   
     {{ relation.name }}:
       name: {{ relation.name }}
