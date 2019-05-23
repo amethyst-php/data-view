@@ -24,7 +24,6 @@ class DataViewSerializer extends Serializer
 
         $config = Yaml::parse((string) $bag->get('config'));
 
-        /*
         $agent = $this->getManager()->getAgent();
 
         if (isset($config['permissions'])) {
@@ -38,7 +37,7 @@ class DataViewSerializer extends Serializer
                     }
                 }
             }
-        }*/
+        }
 
         $bag->set('processed', $config);
 
