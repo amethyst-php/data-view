@@ -25,6 +25,14 @@ options:
         size: 12
 
 {% endif %}{% endfor %}
+{% for component in components %}
+    {{ component }}:
+      name: {{ component }}
+      type: component
+      extends: data-view-{{ component }}
+      options:
+        size: 12
+{% endfor %}
 
   actions:
     resource:
@@ -32,3 +40,9 @@ options:
         extends: data-view-{{ name }}-resource-delete
       update:
         extends: data-view-{{ name }}-resource-update
+
+      {% for action in actions %}
+      
+      {{ action }}:
+        extends: data-view-{{ action }}
+      {% endfor %}

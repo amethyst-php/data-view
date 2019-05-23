@@ -53,12 +53,13 @@ class DataViewSeedCommand extends Command
 
         $data->map(function ($data) use ($bar, $componentFiles, $routesFiles, $serviceFiles) {
             $name = app('amethyst')->getNameDataByModel(Arr::get($data, 'model'));
-            $attributes = $this->serializeAttributes(app(Arr::get($data, 'manager'))->getAttributes());
+            $manager = app(Arr::get($data, 'manager'));
+            $attributes = $this->serializeAttributes($manager->getAttributes());
             $relations = $this->parseRelations($this->getRelationsByClassModel(Arr::get($data, 'model')));
 
-            $this->generate($name, $data, 'component', $attributes, $relations, $componentFiles);
-            $this->generate($name, $data, 'routes', $attributes, $relations, $routesFiles);
-            $this->generate($name, $data, 'service', $attributes, $relations, $serviceFiles);
+            $this->generate($name, $manager, $data, 'component', $attributes, $relations, $componentFiles);
+            $this->generate($name, $manager, $data, 'routes', $attributes, $relations, $routesFiles);
+            $this->generate($name, $manager, $data, 'service', $attributes, $relations, $serviceFiles);
             $bar->advance();
         });
 
@@ -68,10 +69,10 @@ class DataViewSeedCommand extends Command
         $this->info('Done!');
     }
 
-    public function generate($name, $data, string $type, $attributes, $relations, $files)
+    public function generate($name, $manager, $data, string $type, $attributes, $relations, $files)
     {
 
-        $manager = new DataViewManager();
+        $dataViewManager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();
         $api = '/admin/'.$inflector->pluralize($name);
@@ -82,18 +83,20 @@ class DataViewSeedCommand extends Command
                 'api'        => $api,
                 'attributes' => $attributes,
                 'relations'  => $relations,
+                'actions'    => Arr::get($manager->getDescriptor(), 'actions'),
+                'components' => Arr::get($manager->getDescriptor(), 'components'),
             ]);
 
             $configuration = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
 
             $fullname = str_replace('.', '-', $name.'.'.basename($key, '.yml'));
 
-            $view = $manager->findOrCreateOrFail([
+            $view = $dataViewManager->findOrCreateOrFail([
                 'name' => $fullname,
                 'type' => $type,
             ])->getResource();
 
-            $manager->updateOrFail($view, ['config' => $configuration]);
+            $dataViewManager->updateOrFail($view, ['config' => $configuration]);
         }
     }
 
