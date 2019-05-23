@@ -16,4 +16,11 @@ class DataViewsController extends RestManagerController
      * @var string
      */
     public $class = DataViewManager::class;
+
+    /**
+     * Cache response?
+     *
+     * @var boolean
+     */
+    protected $cached = true;
 }
