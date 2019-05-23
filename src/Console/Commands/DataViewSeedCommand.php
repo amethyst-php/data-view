@@ -31,7 +31,6 @@ class DataViewSeedCommand extends Command
 
         $bar = $this->output->createProgressBar($data->count());
 
-
         $this->info('Generating data-views...');
         $this->info('');
 
@@ -39,15 +38,15 @@ class DataViewSeedCommand extends Command
 
         $generator = new TextGenerator();
 
-        $componentFiles = collect(glob(__DIR__."/../../../resources/stubs/component/*"))->mapWithKeys(function ($file) use ($generator) {
+        $componentFiles = collect(glob(__DIR__.'/../../../resources/stubs/component/*'))->mapWithKeys(function ($file) use ($generator) {
             return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
-        $routesFiles = collect(glob(__DIR__."/../../../resources/stubs/routes/*"))->mapWithKeys(function ($file) use ($generator) {
+        $routesFiles = collect(glob(__DIR__.'/../../../resources/stubs/routes/*'))->mapWithKeys(function ($file) use ($generator) {
             return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
-        
-        $serviceFiles = collect(glob(__DIR__."/../../../resources/stubs/service/*"))->mapWithKeys(function ($file) use ($generator) {
+
+        $serviceFiles = collect(glob(__DIR__.'/../../../resources/stubs/service/*'))->mapWithKeys(function ($file) use ($generator) {
             return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
@@ -71,7 +70,6 @@ class DataViewSeedCommand extends Command
 
     public function generate($name, $manager, $data, string $type, $attributes, $relations, $files)
     {
-
         $dataViewManager = new DataViewManager();
         $generator = new TextGenerator();
         $inflector = new Inflector();

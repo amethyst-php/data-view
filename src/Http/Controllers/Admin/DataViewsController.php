@@ -20,7 +20,7 @@ class DataViewsController extends RestManagerController
     /**
      * Cache response?
      *
-     * @var boolean
+     * @var bool
      */
     protected $cached = true;
 }
