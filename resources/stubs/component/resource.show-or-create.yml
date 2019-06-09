@@ -1,3 +1,4 @@
+label: {{ name }}
 extends: data-view-resource-show-or-create
 permissions: 
   - {{ name }}.show

@@ -1,3 +1,4 @@
+label: {{ name }}
 extends: data-view-resource-update
 permissions: 
   - {{ name }}.update

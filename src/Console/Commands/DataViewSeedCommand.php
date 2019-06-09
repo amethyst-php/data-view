@@ -60,9 +60,13 @@ class DataViewSeedCommand extends Command
             $this->generate($name, $manager, $data, 'routes', $attributes, $relations, $routesFiles);
             $this->generate($name, $manager, $data, 'service', $attributes, $relations, $serviceFiles);
             $bar->advance();
+
+            event(new \Railken\Amethyst\Events\DataViewDataGenerated($name));
         });
 
         $bar->finish();
+
+        event(new \Railken\Amethyst\Events\DataViewOperationCompleted());
         $this->info('');
         $this->info('');
         $this->info('Done!');

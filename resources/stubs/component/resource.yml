@@ -1,3 +1,4 @@
+label: {{ name }}
 icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
