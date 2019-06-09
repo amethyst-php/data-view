@@ -99,6 +99,8 @@ class DataViewSeedCommand extends Command
             ])->getResource();
 
             $dataViewManager->updateOrFail($view, ['config' => $configuration]);
+
+            event(new \Railken\Amethyst\Events\DataViewDataUpdated($view));
         }
     }
 
