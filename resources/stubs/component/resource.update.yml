@@ -14,8 +14,6 @@ options:
       type: attribute
       extends: data-view-attribute-input
       include: {{ name }}.components.{{ attribute.name }}
-      options:
-        size: 6
 
 {% endif %}{% endfor %}
 {% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
@@ -25,8 +23,6 @@ options:
       type: relation
       extends: data-view-attribute-input
       include: {{ name }}.components.{{ relation.name }}
-      options:
-        size: 12
 
 {% endif %}{% endfor %}
 {% for component in components %}
@@ -34,6 +30,4 @@ options:
       name: {{ component }}
       type: component
       extends: data-view-{{ component }}
-      options:
-        size: 12
 {% endfor %}

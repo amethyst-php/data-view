@@ -10,6 +10,8 @@ options:
       name: {{ attribute.name }}
       type: attribute
       options:
+        size: 12
+        
         {% if attribute.type == 'BelongsTo' %}
 
         {{ attribute.options.data }}:
@@ -31,5 +33,7 @@ options:
     {{ relation.name }}:
       name: {{ relation.name }}
       type: relation
+      options:
+        size: 12
 
 {% endif %}{% endfor %}

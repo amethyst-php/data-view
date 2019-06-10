@@ -23,8 +23,6 @@ options:
       type: relation
       extends: data-view-attribute-show
       include: {{ name }}.components.{{ relation.name }}
-      options:
-        size: 12
 
 {% endif %}{% endfor %}
 
@@ -33,8 +31,6 @@ options:
       name: {{ component }}
       type: component
       extends: data-view-{{ component }}
-      options:
-        size: 12
 {% endfor %}
 
   actions:
