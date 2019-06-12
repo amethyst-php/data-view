@@ -2,7 +2,6 @@
 
 namespace Railken\Amethyst\Events;
 
-use Exception;
 use Illuminate\Queue\SerializesModels;
 
 class DataViewDataGenerated
@@ -11,8 +10,8 @@ class DataViewDataGenerated
 
     public $name;
 
-    public function __construct(string $name) 
+    public function __construct(string $name)
     {
-    	$this->name = $name;
+        $this->name = $name;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Railken\Amethyst\Events;
 
-use Exception;
 use Illuminate\Queue\SerializesModels;
 use Railken\Amethyst\Models\DataView;
 
@@ -12,8 +11,8 @@ class DataViewDataUpdated
 
     public $dataView;
 
-    public function __construct(DataView $dataView) 
+    public function __construct(DataView $dataView)
     {
-    	$this->dataView = $dataView;
+        $this->dataView = $dataView;
     }
 }
