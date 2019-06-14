@@ -105,7 +105,7 @@ class DataViewSeedCommand extends Command
 
     public function getRelationsByClassModel(string $classModel)
     {
-        return Collection::make(app('eloquent.mapper')->getFinder()->relations($classModel))->map(function ($relation, $key) {
+        return collect(\Railken\EloquentMapper\Mapper::relations($classModel))->map(function ($relation, $key) {
             return array_merge($relation->toArray(), [
                 'key'  => $key,
                 'data' => app('amethyst')->getNameDataByModel($relation->model),
