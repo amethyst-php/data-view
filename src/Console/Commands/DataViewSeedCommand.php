@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Railken\Amethyst\Managers\DataViewManager;
-use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
 
