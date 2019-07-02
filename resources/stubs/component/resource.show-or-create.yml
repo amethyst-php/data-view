@@ -1,9 +1,0 @@
-label: {{ name }}
-extends: data-view-resource-show-or-create
-permissions: 
-  - {{ name }}.show
-  - {{ name }}.create
-  - {{ name }}.update
-icon: /assets/amethyst/{{ name }}-icon.svg
-show: {{ name }}-resource-show
-create: {{ name }}-resource-create-or-update

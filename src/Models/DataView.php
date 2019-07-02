@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Amethyst\Common\ConfigurableModel;
 use Railken\Lem\Contracts\EntityContract;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class DataView extends Model implements EntityContract
 {
@@ -21,5 +22,13 @@ class DataView extends Model implements EntityContract
     {
         $this->ini('amethyst.data-view.data.data-view');
         parent::__construct($attributes);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function authenticable(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

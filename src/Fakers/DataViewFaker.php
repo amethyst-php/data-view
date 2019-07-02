@@ -21,6 +21,8 @@ class DataViewFaker extends Faker
         $bag->set('description', $faker->text);
         $bag->set('config', 'foo');
         $bag->set('enabled', 1);
+        $bag->set('authenticable_type', 'foo');
+        $bag->set('authenticable', FooFaker::make()->parameters()->toArray());
 
         return $bag;
     }
