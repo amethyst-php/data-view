@@ -1,8 +1,8 @@
 <?php
 
-namespace Railken\Amethyst\Tests\Commands;
+namespace Amethyst\Tests\Commands;
 
-use Railken\Amethyst\Tests\BaseTest;
+use Amethyst\Tests\BaseTest;
 
 class DataViewSeedTest extends BaseTest
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Railken\Amethyst\Events;
+namespace Amethyst\Events;
 
 use Illuminate\Queue\SerializesModels;
-use Railken\Amethyst\Models\DataView;
+use Amethyst\Models\DataView;
 
 class DataViewDataUpdated
 {

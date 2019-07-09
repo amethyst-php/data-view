@@ -1,10 +1,10 @@
 <?php
 
-namespace Railken\Amethyst\Tests\Managers;
+namespace Amethyst\Tests\Managers;
 
-use Railken\Amethyst\Fakers\DataViewFaker;
-use Railken\Amethyst\Managers\DataViewManager;
-use Railken\Amethyst\Tests\BaseTest;
+use Amethyst\Fakers\DataViewFaker;
+use Amethyst\Managers\DataViewManager;
+use Amethyst\Tests\BaseTest;
 use Railken\Lem\Support\Testing\TestableBaseTrait;
 
 class DataViewTest extends BaseTest

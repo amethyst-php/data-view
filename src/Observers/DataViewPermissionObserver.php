@@ -1,10 +1,10 @@
 <?php
 
-namespace Railken\Amethyst\Observers;
+namespace Amethyst\Observers;
 
-use Railken\Amethyst\Managers\DataViewManager;
-use Railken\Amethyst\Models\ModelHasPermission;
-use Railken\Amethyst\Models\Permission;
+use Amethyst\Managers\DataViewManager;
+use Amethyst\Models\ModelHasPermission;
+use Amethyst\Models\Permission;
 
 class DataViewPermissionObserver
 {
@@ -55,7 +55,7 @@ class DataViewPermissionObserver
     /**
      * Handle the ModelHasPermission "created" event.
      *
-     * @param \Railken\Amethyst\Models\ModelHasPermission $modelHasPermission
+     * @param \Amethyst\Models\ModelHasPermission $modelHasPermission
      */
     public function created(ModelHasPermission $modelHasPermission)
     {
@@ -94,7 +94,7 @@ class DataViewPermissionObserver
     /**
      * Handle the ModelHasPermission "deleted" event.
      *
-     * @param \Railken\Amethyst\Models\ModelHasPermission $modelHasPermission
+     * @param \Amethyst\Models\ModelHasPermission $modelHasPermission
      */
     public function deleted(ModelHasPermission $modelHasPermission)
     {

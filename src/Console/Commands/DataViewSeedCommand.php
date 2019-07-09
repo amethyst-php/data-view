@@ -1,11 +1,11 @@
 <?php
 
-namespace Railken\Amethyst\Console\Commands;
+namespace Amethyst\Console\Commands;
 
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Railken\Amethyst\Managers\DataViewManager;
+use Amethyst\Managers\DataViewManager;
 use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
 
@@ -59,12 +59,12 @@ class DataViewSeedCommand extends Command
             $this->generate($name, $manager, $data, 'service', $attributes, $relations, $serviceFiles);
             $bar->advance();
 
-            event(new \Railken\Amethyst\Events\DataViewDataGenerated($name));
+            event(new \Amethyst\Events\DataViewDataGenerated($name));
         });
 
         $bar->finish();
 
-        event(new \Railken\Amethyst\Events\DataViewOperationCompleted());
+        event(new \Amethyst\Events\DataViewOperationCompleted());
         $this->info('');
         $this->info('');
         $this->info('Done!');
@@ -98,7 +98,7 @@ class DataViewSeedCommand extends Command
 
             $dataViewManager->updateOrFail($view, ['config' => $configuration]);
 
-            event(new \Railken\Amethyst\Events\DataViewDataUpdated($view));
+            event(new \Amethyst\Events\DataViewDataUpdated($view));
         }
     }
 

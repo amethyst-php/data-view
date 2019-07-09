@@ -1,11 +1,11 @@
 <?php
 
-namespace Railken\Amethyst\Providers;
+namespace Amethyst\Providers;
 
-use Railken\Amethyst\Common\CommonServiceProvider;
-use Railken\Amethyst\Console\Commands\DataViewSeedCommand;
-use Railken\Amethyst\Models\ModelHasPermission;
-use Railken\Amethyst\Observers\DataViewPermissionObserver;
+use Amethyst\Common\CommonServiceProvider;
+use Amethyst\Console\Commands\DataViewSeedCommand;
+use Amethyst\Models\ModelHasPermission;
+use Amethyst\Observers\DataViewPermissionObserver;
 
 class DataViewServiceProvider extends CommonServiceProvider
 {
@@ -17,7 +17,7 @@ class DataViewServiceProvider extends CommonServiceProvider
         parent::register();
 
         $this->app->register(\Railken\Template\TemplateServiceProvider::class);
-        $this->app->register(\Railken\Amethyst\Providers\PermissionServiceProvider::class);
+        $this->app->register(\Amethyst\Providers\PermissionServiceProvider::class);
     }
 
     /**
