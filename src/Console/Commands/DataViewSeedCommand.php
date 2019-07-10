@@ -2,10 +2,10 @@
 
 namespace Amethyst\Console\Commands;
 
+use Amethyst\Managers\DataViewManager;
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Amethyst\Managers\DataViewManager;
 use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
 

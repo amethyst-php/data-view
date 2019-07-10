@@ -2,8 +2,8 @@
 
 namespace Amethyst\Events;
 
-use Illuminate\Queue\SerializesModels;
 use Amethyst\Models\DataView;
+use Illuminate\Queue\SerializesModels;
 
 class DataViewDataUpdated
 {

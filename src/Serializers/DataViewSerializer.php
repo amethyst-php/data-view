@@ -2,8 +2,8 @@
 
 namespace Amethyst\Serializers;
 
-use Illuminate\Support\Collection;
 use Amethyst\Services\PermissionService;
+use Illuminate\Support\Collection;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Serializer;
 use Symfony\Component\Yaml\Yaml;

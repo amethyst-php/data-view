@@ -2,11 +2,11 @@
 
 namespace Amethyst\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Amethyst\Common\ConfigurableModel;
-use Railken\Lem\Contracts\EntityContract;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Railken\Lem\Contracts\EntityContract;
 
 class DataView extends Model implements EntityContract
 {
