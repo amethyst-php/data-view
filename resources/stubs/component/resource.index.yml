@@ -12,8 +12,8 @@ options:
 
     {{ attribute.name }}:
       name: {{ attribute.name }}
-      extends: data-view-attribute-show
       include: {{ name }}.components.{{ attribute.name }}
+      {% if attribute.type in ['Id', 'Uuid', 'LongText', 'CreatedAt', 'UpdatedAt', 'DeletedAt', 'Html', 'Yaml'] %}show: false{% endif %}
         
 {% endfor %}
 {% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
@@ -21,8 +21,8 @@ options:
     {{ relation.name }}:
       name: {{ relation.name }}
       type: relation
-      extends: data-view-attribute-show
       include: {{ name }}.components.{{ relation.name }}
+      show: false
 
 {% endif %}{% endfor %}
 

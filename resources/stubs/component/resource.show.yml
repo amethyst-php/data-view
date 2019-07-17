@@ -12,7 +12,6 @@ options:
     {{ attribute.name }}:
       name: {{ attribute.name }}
       type: attribute
-      extends: data-view-attribute-show
       include: {{ name }}.components.{{ attribute.name }}
 {% endfor %}
 {% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
@@ -20,7 +19,6 @@ options:
     {{ relation.name }}:
       name: {{ relation.name }}
       type: relation
-      extends: data-view-attribute-show
       include: {{ name }}.components.{{ relation.name }}
 
 {% endif %}{% endfor %}

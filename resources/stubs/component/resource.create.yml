@@ -12,7 +12,6 @@ options:
     {{ attribute.name }}:
       name: {{ attribute.name }}
       type: attribute
-      extends: data-view-attribute-input
       include: {{ name }}.components.{{ attribute.name }}
         
 {% endif %}{% endfor %}
