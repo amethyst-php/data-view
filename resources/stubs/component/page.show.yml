@@ -6,7 +6,7 @@ icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
   api: {{ api }}
-  sections:
+  components:
     main: 
       extends: {{ name }}-resource-show
 {% for relation in relations %}{% if relation.type == 'HasMany' or relation.type == 'MorphMany' %}
