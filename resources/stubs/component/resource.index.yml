@@ -13,7 +13,12 @@ options:
     {{ attribute.name }}:
       name: {{ attribute.name }}
       include: {{ name }}.components.{{ attribute.name }}
-      {% if attribute.type in ['Id', 'Uuid', 'LongText', 'CreatedAt', 'UpdatedAt', 'DeletedAt', 'Html', 'Yaml'] %}show: false{% endif %}
+
+      {% if attribute.type in ['Id', 'Uuid', 'LongText', 'CreatedAt', 'UpdatedAt', 'DeletedAt', 'Html', 'Yaml'] %}
+      
+      options:  
+        hide: true
+      {% endif %}
         
 {% endfor %}
 {% for relation in relations %}{% if relation.type == 'MorphToMany' or relation.type == 'BelongsToMany' %}
@@ -22,7 +27,8 @@ options:
       name: {{ relation.name }}
       type: relation
       include: {{ name }}.components.{{ relation.name }}
-      show: false
+      options:
+        hide: true
 
 {% endif %}{% endfor %}
 
