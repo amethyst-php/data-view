@@ -135,6 +135,7 @@ class DataViewSeedCommand extends Command
             }
 
             return [
+                'instance' => $attribute,
                 'name'     => $attribute->getName(),
                 'type'     => $attribute->getType(),
                 'fillable' => $attribute->getFillable(),
@@ -157,6 +158,9 @@ class DataViewSeedCommand extends Command
     {
         $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
 
+        $class = app('amethyst')->findManagerByName($relation['data']);
+        $relation['manager'] = new $class;
+        
         return $relation;
     }
 }

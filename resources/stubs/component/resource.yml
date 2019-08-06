@@ -15,14 +15,25 @@ options:
         {% if attribute.type == 'BelongsTo' %}
 
         {{ attribute.options.data }}:
+          query: 
+            template: concat({{ attribute.instance.getRelationManager().getPrimaryAttributeNames().implode('," ",') | raw}}) ct "{{ '{{ __key__ }}' }}"
+          readable: 
+            type: default
+            template: {{ '"{{' }} {{ attribute.instance.getRelationManager().getPrimaryAttributeNames().implode(' \}\} - \{\{ ') }} {{ '}}"' }}
           actions:
             update: {{ attribute.options.data }}-resource-create-or-update
+
 
         {% endif %}
 
         {% if attribute.type == 'MorphTo' %}{% for relationType in attribute.options.relationTypes %}
 
         {{ relationType }}:
+          query: 
+            template: concat({{ attribute.instance.getRelationManagerByKey(relationType).getPrimaryAttributeNames().implode('," ",') | raw}}) ct "{{ '{{ __key__ }}' }}"
+          readable: 
+            type: default
+            template: {{ '"{{' }} {{ attribute.instance.getRelationManagerByKey(relationType).getPrimaryAttributeNames().implode(' \}\} - \{\{ ') }} {{ '}}"' }}
           actions:
             update: {{ relationType }}-resource-create-or-update
 
@@ -35,5 +46,10 @@ options:
       type: relation
       options:
         size: 12
+        query: 
+          template: concat({{ relation.manager.getPrimaryAttributeNames().implode('," ",') | raw}}) ct "{{ '{{ __key__ }}' }}"
+        readable: 
+          type: default
+          template: {{ '"{{' }} {{ relation.manager.getPrimaryAttributeNames().implode(' \}\} - \{\{ ') }} {{ '}}"' }}
 
 {% endif %}{% endfor %}
