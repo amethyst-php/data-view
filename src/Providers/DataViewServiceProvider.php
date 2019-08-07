@@ -6,6 +6,8 @@ use Amethyst\Common\CommonServiceProvider;
 use Amethyst\Console\Commands\DataViewSeedCommand;
 use Amethyst\Models\ModelHasPermission;
 use Amethyst\Observers\DataViewPermissionObserver;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Artisan;
 
 class DataViewServiceProvider extends CommonServiceProvider
 {
@@ -30,5 +32,10 @@ class DataViewServiceProvider extends CommonServiceProvider
         parent::boot();
 
         ModelHasPermission::observe(DataViewPermissionObserver::class);
+
+        Event::listen(\Railken\EloquentMapper\Events\EloquentMapUpdate::class, function () {
+            Artisan::call('amethyst:data-view:seed');
+            \Spatie\ResponseCache\Facades\ResponseCache::clear();
+        });
     }
 }
