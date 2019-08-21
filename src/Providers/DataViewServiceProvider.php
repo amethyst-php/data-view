@@ -31,7 +31,7 @@ class DataViewServiceProvider extends CommonServiceProvider
 
         parent::boot();
 
-        ModelHasPermission::observe(DataViewPermissionObserver::class);
+        // ModelHasPermission::observe(DataViewPermissionObserver::class);
 
         Event::listen(\Railken\EloquentMapper\Events\EloquentMapUpdate::class, function ($event) {
             Artisan::call('amethyst:data-view:seed', [
