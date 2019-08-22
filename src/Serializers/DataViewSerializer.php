@@ -26,21 +26,6 @@ class DataViewSerializer extends Serializer
 
         $agent = $this->getManager()->getAgent();
 
-        if (isset($config['permissions'])) {
-            $permission = app(PermissionService::class)->findFirstPermissionByPolicyCached($agent, $config['permissions'][0]);
-
-            if ($permission && isset($config['options']['components'])) {
-                $attrs = explode(',', $permission->pivot->attribute);
-                foreach ($config['options']['components'] as $key => $attribute) {
-                    if (!in_array($attribute['name'], $attrs, true)) {
-                        if (isset($attribute['type']) && $attribute['type'] === 'attribute') {
-                            unset($config['options']['components'][$key]);
-                        }
-                    }
-                }
-            }
-        }
-
         $bag->set('processed', $config);
 
         return $bag;
