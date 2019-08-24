@@ -10,13 +10,14 @@ use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
 
 class DataViewSeedCommand extends Command
-{
+{   
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'amethyst:data-view:seed';
+    protected $signature = 'amethyst:data-view:seed {data?}';
 
     /**
      * Execute the console command.
@@ -25,7 +26,9 @@ class DataViewSeedCommand extends Command
      */
     public function handle()
     {
-        $data = app('amethyst')->getData();
+        $data = !empty($this->argument('data'))
+            ? collect([$this->argument('data') => app('amethyst')->findDataByName($this->argument('data'))])
+            : app('amethyst')->getData();
 
         $bar = $this->output->createProgressBar($data->count());
 
