@@ -16,6 +16,7 @@ class CreateDataViewsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('type');
+            $table->string('tag')->nullable();
             $table->text('description')->nullable();
             $table->string('permission')->nullable();
             $table->longtext('config')->nullable();

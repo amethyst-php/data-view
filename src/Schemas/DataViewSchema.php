@@ -21,6 +21,7 @@ class DataViewSchema extends Schema
                 ->setUnique(true),
             Attributes\TextAttribute::make('type')
                 ->setRequired(true),
+            Attributes\TextAttribute::make('tag'),
             Attributes\LongTextAttribute::make('description'),
             Attributes\YamlAttribute::make('config'),
             Attributes\BooleanAttribute::make('enabled'),

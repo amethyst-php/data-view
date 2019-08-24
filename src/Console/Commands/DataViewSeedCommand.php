@@ -96,6 +96,7 @@ class DataViewSeedCommand extends Command
             $view = $dataViewManager->findOrCreateOrFail([
                 'name' => $fullname,
                 'type' => $type,
+                'tag' => $name
             ])->getResource();
 
             $dataViewManager->updateOrFail($view, ['config' => $configuration]);
