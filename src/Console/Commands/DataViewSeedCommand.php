@@ -16,7 +16,7 @@ class DataViewSeedCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amethyst:data-view:seed {data?}';
+    protected $signature = 'amethyst:data-view:seed';
 
     /**
      * Execute the console command.
@@ -25,9 +25,7 @@ class DataViewSeedCommand extends Command
      */
     public function handle()
     {
-        $data = !empty($this->argument('data'))
-            ? collect([$this->argument('data') => app('amethyst')->findDataByName($this->argument('data'))])
-            : app('amethyst')->getData();
+        $data = app('amethyst')->getData();
 
         $bar = $this->output->createProgressBar($data->count());
 
@@ -161,9 +159,11 @@ class DataViewSeedCommand extends Command
     {
         $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
 
-        $class = app('amethyst')->findManagerByName($relation['data']);
-        $relation['manager'] = new $class();
-
+        if (app('amethyst')->findDataByName($relation['data'])) {
+            $class = app('amethyst')->findManagerByName($relation['data']);
+            $relation['manager'] = new $class;
+        }
+        
         return $relation;
     }
 }
