@@ -1,5 +1,5 @@
 label: {{ name }}
-extends: data-view-resource-update
+extends: resource-update
 permissions: 
   - {{ name }}.update
 icon: /assets/amethyst/{{ name }}-icon.svg
@@ -27,5 +27,5 @@ options:
     {{ component }}:
       name: {{ component }}
       type: component
-      extends: data-view-{{ component }}
+      extends: {{ component }}
 {% endfor %}

@@ -1,5 +1,5 @@
 label: {{ name }}
-extends: data-view-page-show
+extends: page-show
 permissions: 
   - {{ name }}.show
 icon: /assets/amethyst/{{ name }}-icon.svg

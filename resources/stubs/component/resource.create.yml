@@ -1,5 +1,5 @@
 label: {{ name }}
-extends: data-view-resource-create
+extends: resource-create
 permissions: 
   - {{ name }}.create
 icon: /assets/amethyst/{{ name }}-icon.svg
@@ -20,7 +20,7 @@ options:
     {{ relation.name }}:
       name: {{ relation.name }}
       type: relation
-      extends: data-view-attribute-input
+      extends: attribute-input
       include: {{ name }}.components.{{ relation.name }}
 
 {% endif %}{% endfor %}
@@ -28,5 +28,5 @@ options:
     {{ component }}:
       name: {{ component }}
       type: component
-      extends: data-view-{{ component }}
+      extends: {{ component }}
 {% endfor %}

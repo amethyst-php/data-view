@@ -1,5 +1,5 @@
 label: {{ name }}
-extends: data-view-resource-delete
+extends: resource-delete
 permissions: 
   - {{ name }}.remove
 icon: /assets/amethyst/{{ name }}-icon.svg

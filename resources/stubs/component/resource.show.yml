@@ -1,5 +1,5 @@
 label: {{ name }}
-extends: data-view-resource-show
+extends: resource-show
 permissions: 
   - {{ name }}.show
 icon: /assets/amethyst/{{ name }}-icon.svg
@@ -26,18 +26,18 @@ options:
     {{ component }}:
       name: {{ component }}
       type: component
-      extends: data-view-{{ component }}
+      extends: {{ component }}
 {% endfor %}
 
   actions:
     resource:
       delete:
-        extends: data-view-{{ name }}-resource-delete
+        extends: {{ name }}-resource-delete
       update:
-        extends: data-view-{{ name }}-resource-update
+        extends: {{ name }}-resource-update
 
       {% for action in actions %}
       
       {{ action }}:
-        extends: data-view-{{ action }}
+        extends: {{ action }}
       {% endfor %}
