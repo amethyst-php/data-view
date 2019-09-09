@@ -10,8 +10,7 @@ use Railken\Lem\Attributes;
 use Railken\Template\Generators\TextGenerator;
 
 class DataViewSeedCommand extends Command
-{   
-
+{
     /**
      * The name and signature of the console command.
      *
@@ -97,7 +96,7 @@ class DataViewSeedCommand extends Command
             $view = $dataViewManager->findOrCreateOrFail([
                 'name' => $fullname,
                 'type' => $type,
-                'tag' => $name
+                'tag'  => $name,
             ])->getResource();
 
             $dataViewManager->updateOrFail($view, ['config' => $configuration]);
@@ -164,9 +163,9 @@ class DataViewSeedCommand extends Command
 
         if (app('amethyst')->findDataByName($relation['data'])) {
             $class = app('amethyst')->findManagerByName($relation['data']);
-            $relation['manager'] = new $class;
+            $relation['manager'] = new $class();
         }
-        
+
         return $relation;
     }
 }
