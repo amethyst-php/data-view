@@ -4,6 +4,7 @@ namespace Amethyst\Schemas;
 
 use Railken\Lem\Attributes;
 use Railken\Lem\Schema;
+use Amethyst\Managers\DataViewManager;
 
 class DataViewSchema extends Schema
 {
@@ -30,6 +31,9 @@ class DataViewSchema extends Schema
                 ->setRelationKey('authenticable_type')
                 ->setRelationName('authenticable')
                 ->setRelations(app('amethyst')->getMorphRelationable('data-view', 'authenticable')),
+            Attributes\BelongsToAttribute::make('parent_id')
+                ->setRelationName('parent')
+                ->setRelationManager(DataViewManager::class),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),
             Attributes\DeletedAtAttribute::make(),

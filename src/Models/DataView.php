@@ -5,6 +5,7 @@ namespace Amethyst\Models;
 use Amethyst\Common\ConfigurableModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
 
@@ -30,5 +31,13 @@ class DataView extends Model implements EntityContract
     public function authenticable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(config('amethyst.data-view.data.data-view.model'));
     }
 }

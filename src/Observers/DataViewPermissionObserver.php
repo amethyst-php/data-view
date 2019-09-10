@@ -21,7 +21,6 @@ class DataViewPermissionObserver
             $values = array_merge($values, [
                 sprintf('%s-bookmark', $data),
                 sprintf('%s-routes', $data),
-                sprintf('%s-resource', $data),
                 sprintf('%s-resource-index', $data),
                 sprintf('%s-resource-show', $data),
                 sprintf('%s-page-index', $data),
@@ -29,22 +28,14 @@ class DataViewPermissionObserver
             ]);
         }
 
-        if ($action === 'create') {
+        if ($action === 'upsert') {
             $values = array_merge($values, [
-                sprintf('%s-resource-create', $data),
-            ]);
-        }
-
-        if ($action === 'update') {
-            $values = array_merge($values, [
-                sprintf('%s-resource-update', $data),
-                sprintf('%s-resource-create-or-update', $data),
+                sprintf('%s-resource-upsert', $data),
             ]);
         }
 
         if ($action === 'remove') {
             $values = array_merge($values, [
-                sprintf('%s-resource-remove', $data),
                 sprintf('%s-resource-delete', $data),
             ]);
         }

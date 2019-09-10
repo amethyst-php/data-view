@@ -14,7 +14,7 @@ class CreateDataViewsTable extends Migration
     {
         Schema::create(Config::get('amethyst.data-view.data.data-view.table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->index();
             $table->string('type');
             $table->string('tag')->nullable();
             $table->text('description')->nullable();
@@ -23,6 +23,8 @@ class CreateDataViewsTable extends Migration
             $table->boolean('enabled')->default(1);
             $table->string('authenticable_type')->nullable();
             $table->integer('authenticable_id')->unsigned()->nullable();
+            $table->integer('parent_id')->unsigned()->nullable();
+            $table->foreign('parent_id')->references('id')->on(Config::get('amethyst.data-view.data.data-view.table'));
             $table->timestamps();
             $table->softDeletes();
         });

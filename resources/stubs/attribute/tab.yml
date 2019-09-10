@@ -1,0 +1,67 @@
+name: {{ component.name }}
+extends: attribute-input
+options:
+  {{ component.key }}:
+    extends: {{ component.data }}-resource-index
+    options:
+      components:
+        {{ component.foreignKey }}:
+          name: {{ component.foreignKey }}
+          include: {{ component.data }}.components.{{ component.foreignKey }}
+          fixed: "${parent.id}"
+
+  {% for scope in component.scope %}
+            
+            {{ scope.column }}:
+              name: {{ scope.column }}
+              include: {{ component.data }}.components.{{ scope.column }}
+
+              {% if scope.value is iterable %}
+              
+              fixed: 
+
+                {% for val in scope.value %}
+                - "{{ val }}"
+                {% endfor %}
+
+              {% else %}
+              
+              fixed: "{{ scope.value }}"
+              
+              {% endif %}
+
+  {% endfor %}
+  {% if component.type == 'HasOne' or component.type == 'MorphOne' %}
+
+      {{ component.key }}:
+        extends: {{ component.data }}-resource-show-or-create
+        options:
+          extractor: {{ component.key }}
+          components:
+            {{ component.foreignKey }}:
+              name: {{ component.foreignKey }}
+              include: {{ component.data }}.components.{{ component.foreignKey }}
+              fixed: "${parent.id}"
+
+  {% for scope in component.scope %}
+            
+            {{ scope.column }}:
+              name: {{ scope.column }}
+              include: {{ component.data }}.components.{{ scope.column }}
+
+              {% if scope.value is iterable %}
+              
+              fixed: 
+
+                {% for val in scope.value %}
+                - "{{ val }}"
+                {% endfor %}
+
+              {% else %}
+              
+              fixed: "{{ scope.value }}"
+              
+              {% endif %}
+
+  {% endfor %}
+  {% endif %}

@@ -1,7 +1,7 @@
 label: {{ name }}
-extends: page-show
+extends: resource-upsert
 permissions: 
-  - {{ name }}.show
+  - {{ name }}.create
 icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
