@@ -10,8 +10,8 @@ options:
     resource:
       delete:
         extends: {{ name }}-resource-delete
-      update:
-        extends: {{ name }}-resource-update
+      upsert:
+        extends: {{ name }}-resource-upsert
 
       {% for action in actions %}
       

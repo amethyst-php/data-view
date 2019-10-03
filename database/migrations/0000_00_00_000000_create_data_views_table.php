@@ -21,8 +21,6 @@ class CreateDataViewsTable extends Migration
             $table->string('permission')->nullable();
             $table->longtext('config')->nullable();
             $table->boolean('enabled')->default(1);
-            $table->string('authenticable_type')->nullable();
-            $table->integer('authenticable_id')->unsigned()->nullable();
             $table->integer('parent_id')->unsigned()->nullable();
             $table->foreign('parent_id')->references('id')->on(Config::get('amethyst.data-view.data.data-view.table'));
             $table->timestamps();

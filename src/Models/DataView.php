@@ -24,15 +24,7 @@ class DataView extends Model implements EntityContract
         $this->ini('amethyst.data-view.data.data-view');
         parent::__construct($attributes);
     }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
-    public function authenticable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

@@ -8,7 +8,7 @@ options:
   api: {{ api }}
   actions:
     global:
-      upsert:
+      create:
         extends: {{ name }}-resource-upsert
     resource:
       delete:

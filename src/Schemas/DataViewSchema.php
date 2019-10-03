@@ -26,11 +26,6 @@ class DataViewSchema extends Schema
             Attributes\LongTextAttribute::make('description'),
             Attributes\YamlAttribute::make('config'),
             Attributes\BooleanAttribute::make('enabled'),
-            Attributes\EnumAttribute::make('authenticable_type', app('amethyst')->getMorphListable('data-view', 'authenticable')),
-            Attributes\MorphToAttribute::make('authenticable_id')
-                ->setRelationKey('authenticable_type')
-                ->setRelationName('authenticable')
-                ->setRelations(app('amethyst')->getMorphRelationable('data-view', 'authenticable')),
             Attributes\BelongsToAttribute::make('parent_id')
                 ->setRelationName('parent')
                 ->setRelationManager(DataViewManager::class),
