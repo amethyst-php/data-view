@@ -167,22 +167,44 @@ class DataViewSeedCommand extends Command
 
                 $attributes = $manager->getAttributes();
 
+
                 if ($dataView->name === sprintf("%s.resource.upsert", $name)) {
                     $attributes = $attributes->filter(function ($attribute) {
                         return $attribute->getFillable();
                     });
                 }
 
+                if ($dataView->name === sprintf("%s.resource.show", $name) || $dataView->name === sprintf("%s.resource.index", $name)) {
+                    $attributes = $attributes->filter(function ($attribute) {
+                        return !$attribute->getHidden();
+                    });
+                }
+
                 $components = $relations->merge($attributes)->map(function ($component) use ($name) {
                     return [
                         'name' => $component->getName(), 
-                        'include' => $name.".".$component->getName()
+                        'include' => $name.".".$component->getName(),
+                        'require' => $name.".".$component->getName()
                     ];
                 });
 
+
                 $this->generateComponents($dataView, $name, $components, 'generic');
+
             }
         }
+
+        $components = $this->helper
+        ->getRelationsByClassModel(Arr::get($data, 'model'))
+        ->map(function ($i) {
+            return $i['name'];
+        })->merge($manager->getAttributes()->map(function($i) {
+            return $i->getName();
+        }));
+
+        $this->dataViewManager->getRepository()->getQuery()->whereNotNull('require')->whereNotIn('require', $components->map(function ($i) use ($name) {
+            return $name.".".$i;
+        }))->where('tag', $name)->delete();
     }
 
     public function generateAttributesWithHelper(string $name, iterable $attributes)
@@ -194,10 +216,11 @@ class DataViewSeedCommand extends Command
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name' => sprintf("%s.%s", $name, $component['name']),
                 'type' => 'component',
+                'require' => $name.".".$component['name'],
                 'tag'  => $name,
             ])->getResource();
 
-            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component)]);
+            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component,10)]);
         }
     }
 
@@ -213,6 +236,7 @@ class DataViewSeedCommand extends Command
                 'name' => sprintf("%s.%s", $parent ? $parent->name : $name, $component['name']),
                 'type' => 'component',
                 'tag'  => $name,
+                'require' => $component['require'] ?? null,
                 'parent_id' => $parent ? $parent->id : null
             ])->getResource();
 

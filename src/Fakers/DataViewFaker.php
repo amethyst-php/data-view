@@ -18,6 +18,7 @@ class DataViewFaker extends Faker
         $bag = new Bag();
         $bag->set('name', $faker->name);
         $bag->set('tag', 'foo');
+        $bag->set('require', 'foo');
         $bag->set('type', 'component');
         $bag->set('description', $faker->text);
         $bag->set('config', 'foo');

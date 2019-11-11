@@ -17,6 +17,7 @@ class CreateDataViewsTable extends Migration
             $table->string('name')->index();
             $table->string('type');
             $table->string('tag')->nullable();
+            $table->string('require')->nullable();
             $table->text('description')->nullable();
             $table->string('permission')->nullable();
             $table->longtext('config')->nullable();

@@ -54,23 +54,25 @@ class DataViewHelper
             'extends' => 'attribute-input',
             'type' => 'attribute',
             'options' => [
-                'size'       => 12,
                 'name'       => $attribute->getName(),
                 'type'       => $attribute->getType(),
-                'fillable'   => (bool) $attribute->getFillable(),
+                // 'fillable'   => (bool) $attribute->getFillable(),
                 'required'   => (bool) $attribute->getRequired(),
                 'unique'     => (bool) $attribute->getUnique(),
-                'hidden'     => (bool) $attribute->getHidden(),
                 'default'    => $attribute->getDefault($attribute->getManager()->newEntity()),
-                'descriptor' => $attribute->getDescriptor(),
-                'extract' => [
+                // 'descriptor' => $attribute->getDescriptor(),
+                'extract' => $attribute->getHidden() ? null : [
                     'attributes' => [
                         $attribute->getName() => [
                             'path' => $attribute->getName(),
                         ]
                     ]
                 ],
-                'inject' => $attribute->getName(),
+                'readable' => [
+                    'type' => 'default',
+                    'label' => "{{ value }}",
+                ],
+                // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
                         $attribute->getName() => [
@@ -82,10 +84,6 @@ class DataViewHelper
                     'attributes' => [
                         $attribute->getName() => "{{ resource.{$attribute->getName()} }}"
                     ],
-                ],
-                'readable' => [
-                    'type' => 'default',
-                    'label' => sprintf("{{ %s }}", $attribute->getName()),
                 ]
             ],
         ];
@@ -111,24 +109,29 @@ class DataViewHelper
             'extends' => 'attribute-input',
             'type' => 'attribute',
             'options' => [
-                'size'       => 12,
                 'name'       => $attribute->getName(),
-                'type'       => $attribute->getType(),
-                'fillable'   => (bool) $attribute->getFillable(),
+                'type'       => 'autocomplete',
                 'required'   => (bool) $attribute->getRequired(),
                 'extract' => [
                     'attributes' => [
                         $attribute->getRelationName() => [
                             'path' => $attribute->getRelationName(),
                         ],
-                        $attribute->getName() => [
+                        /*$attribute->getName() => [
                             'data' => $data,
                             'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
-                        ]
+                        ]*/
                     ]
                 ],
-                'inject' => $attribute->getName(),
-                'type' => 'autocomplete',
+                'readable' => [
+                    'type' => 'default',
+                    'label' => $attribute
+                        ->getRelationManager()
+                        ->getPrimaryAttributeNames()
+                        ->map(function ($x) { 
+                            return "{{ value.$x }}";
+                        })->implode(" "),
+                ],
                 'include' => [$attribute->getRelationName()],
                 'select' => [
                     'data' => $data,
@@ -158,15 +161,6 @@ class DataViewHelper
                         ]
                     ]
                 ],
-                'readable' => [
-                    'type' => 'default',
-                    'label' => $attribute
-                        ->getRelationManager()
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($attribute) { 
-                            return "{{ {$attribute->getRelationName()}.$x }}";
-                        })->implode(" "),
-                ],
                 'actions' => [
                     'update' => sprintf('%s-resource-upsert', $data),
                 ]
@@ -189,24 +183,29 @@ class DataViewHelper
                 'type' => 'attribute',
                 'options' => [
                     'name'       => $attribute->getName(),
-                    'type'       => $attribute->getType(),
-                    'fillable'   => (bool) $attribute->getFillable(),
+                    'type'       => 'autocomplete',
                     'required'   => (bool) $attribute->getRequired(),
-                    'size' => 12,
                     'extract' => [
                         'attributes' => [
                             $attribute->getRelationName() => [
                                 'path' => $attribute->getRelationName(),
                             ],
-                            $attribute->getName() => [
+                            /*$attribute->getName() => [
                                 'data' => $key,
                                 'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
-                            ]
+                            ]*/
                         ]
                     ],
-                    'inject' => $attribute->getName(),
+                    'readable' => [
+                        'type' => 'default',
+                        'label' => $attribute
+                            ->getRelationManagerByKey($key)
+                            ->getPrimaryAttributeNames()
+                            ->map(function ($x) { 
+                                return "{{ value.$x }}";
+                            })->implode(" "),
+                    ],
                     'include' => [$attribute->getRelationName()],
-                    'type' => 'autocomplete',
                     'condition' => sprintf("%s === {{ resource.%s }}", $key, $attribute->getRelationKey()),
                     'persist' => [
                         'attributes' => [
@@ -235,15 +234,6 @@ class DataViewHelper
                             ->map(function ($x) use ($attribute) { 
                                 return "{{ $x }}";
                             })->implode(" - "),
-                    ],
-                    'readable' => [
-                        'type' => 'default',
-                        'label' => $attribute
-                            ->getRelationManagerByKey($key)
-                            ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute) { 
-                                return "{{ {$attribute->getRelationName()}.$x }}";
-                            })->implode(" "),
                     ],
                     'actions' => [
                         'update' => sprintf('%s-resource-upsert', $key),
