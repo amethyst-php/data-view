@@ -62,7 +62,7 @@ class DataViewHelper
                 'unique'     => (bool) $attribute->getUnique(),
                 'default'    => $attribute->getDefault($attribute->getManager()->newEntity()),
                 // 'descriptor' => $attribute->getDescriptor(),
-                'extract' => $attribute->getHidden() ? null : [
+                'extract' => [
                     'attributes' => [
                         $attribute->getName() => [
                             'path' => $attribute->getName(),
