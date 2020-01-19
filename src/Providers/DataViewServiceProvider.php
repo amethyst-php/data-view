@@ -2,7 +2,7 @@
 
 namespace Amethyst\Providers;
 
-use Amethyst\Common\CommonServiceProvider;
+use Amethyst\Core\Providers\CommonServiceProvider;
 use Amethyst\Console\Commands\DataViewSeedCommand;
 use Amethyst\Models\ModelHasPermission;
 use Amethyst\Observers\DataViewPermissionObserver;
