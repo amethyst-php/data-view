@@ -4,6 +4,7 @@ namespace Amethyst\Helpers;
 
 use Railken\Lem\Attributes;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 
 class DataViewHelper
 {
@@ -30,6 +31,7 @@ class DataViewHelper
         })->getOptions();
     }
 
+
     public function serializeAttributes(Collection $attributes): Collection
     {
         $result = Collection::make();
@@ -43,6 +45,7 @@ class DataViewHelper
 
             $result = $result->merge(collect($this->$method($attribute)));
         };
+
 
         return $result;
     }
@@ -92,6 +95,110 @@ class DataViewHelper
         return [$params];
     }
 
+    public function serializeRelations(Collection $relations): Collection
+    {
+        $result = Collection::make();
+
+        foreach ($relations as $relation) {
+            $method = sprintf("serialize%s", $relation['type']);
+
+            if (method_exists($this, $method)) {
+                $result = $result->merge(collect($this->$method($relation)));
+            }
+
+        };
+
+        return $result;
+    }
+
+    public function serializeMorphToMany($relation): iterable
+    {
+        $relationManager = app('amethyst')->newManagerByModel($relation['model']);
+        $name = $relation['name'];
+
+        $relatedPivotKey = $relation['relatedPivotKey'];
+        $foreignPivotKey = $relation['foreignPivotKey'];
+
+        $fixed = [
+            $foreignPivotKey => '{{ resource.id }}',
+            $relation['morphType'] => $relation['morphClass'],
+        ];
+
+        foreach ($relation['scope'] as $scope) {
+            $column = $scope['column'];
+            $columns = explode(".", $column);
+            if ((count($columns) > 1) && $columns[0] === $relation['table']) {
+                $columns = [$columns[1]];
+            }
+
+            $column = implode(".", $columns);
+
+            $fixed[$column] = $scope['value'];
+        }
+
+        $params = [
+            'name' => $name,
+            'extends' => 'attribute-input',
+            'type' => 'attribute',
+            'options' => [
+                'name'       => $name,
+                'type'       => 'autocomplete',
+                'hide'       => false,
+                'required'   => false,
+                'multiple'   => true,
+                'default'    => [],
+                'include'    => [$name],
+                'extract'    => [
+                    'attributes' => [
+                        $name => [
+                            'path' => $name,
+                        ]
+                    ]
+                ],
+                'readable' => [
+                    'type' => 'default',
+                    'label' => $relationManager
+                        ->getPrimaryAttributeNames()
+                        ->map(function ($x) { 
+                            return "{{ value.$x }}";
+                        })->implode(" "),
+                ],
+                'select' => [
+                    'data' => $relation['data'],
+                    'query' => sprintf(
+                        "concat(%s) ct '{{ __key__ }}'",
+                        $relationManager
+                        ->getPrimaryAttributeNames()
+                        ->map(function ($x) { 
+                            return "$x";
+                        })->implode(",")
+                    ),
+                    'label' => $relationManager
+                        ->getPrimaryAttributeNames()
+                        ->map(function ($x) { 
+                            return "{{ $x }}";
+                        })->implode(" - "),
+                ],
+                'persist' => [
+                    'attributes' => [
+                        $name => [
+                            'path' => "value"
+                        ]
+                    ],
+                    'data' => [
+                        'name' => app('amethyst')->getNameDataByModel($relation['intermediate']),
+                        'scopes' => $fixed,
+                        'attributes' => [
+                            $relatedPivotKey => '{{ value.id }}',
+                        ]
+                    ],
+                ]
+            ],
+        ];
+
+        return [$params];
+    }
+
     public function serializeEnumAttribute(Attributes\EnumAttribute $attribute): iterable
     {
         return collect($this->serializeBaseAttribute($attribute))->map(function ($attr) use ($attribute) {
@@ -100,7 +207,7 @@ class DataViewHelper
             return $attr;
         })->toArray();
     }
-    
+
     public function serializeBelongsToAttribute(Attributes\BelongsToAttribute $attribute): iterable
     {
         $data = $this->getRelationByKeyName($attribute->getManager()->getEntity(), $attribute->getRelationName())['data'];

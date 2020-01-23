@@ -124,7 +124,7 @@ class DataViewSeedCommand extends Command
 
                 // HasMany/MorphMany/HasOne/MorphOne
                 $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['HasMany', 'MorphMany', 'HasOne', 'MorphOne']);
+                    return in_array($relation, ['HasMany', 'MorphMany', 'HasOne', 'MorphOne', 'MorphToMany', 'BelongsToMany']);
                 });
 
                 $this->generateComponents($dataView, $name, $this->parseRelations($relations), 'tab');
@@ -150,9 +150,10 @@ class DataViewSeedCommand extends Command
                     return in_array($relation, ['MorphToMany', 'BelongsToMany']);
                 });
 
-                $this->generateComponents(null, $name, $this->parseRelations($relations), 'relation');
+                //$this->generateComponents(null, $name, $this->parseRelations($relations), 'relation');
                 
                 $this->generateAttributesWithHelper($name, $manager->getAttributes());
+                $this->generateRelationsWithHelper($name, Arr::get($data, 'model'));
             }
 
             if (in_array($dataView->name, [
@@ -162,7 +163,7 @@ class DataViewSeedCommand extends Command
             ])) {
 
                 $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['MorphToMany', 'BelongsToMany']);
+                    return in_array($relation['type'], ['MorphToMany', 'BelongsToMany']);
                 });
 
                 $attributes = $manager->getAttributes();
@@ -180,13 +181,19 @@ class DataViewSeedCommand extends Command
                     });
                 }
 
-                $components = $relations->merge($attributes)->map(function ($component) use ($name) {
+                $components = $attributes->map(function ($component) use ($name) {
                     return [
                         'name' => $component->getName(), 
                         'include' => $name.".".$component->getName(),
                         'require' => $name.".".$component->getName()
                     ];
-                });
+                })->merge($relations->map(function ($component) use ($name) {
+                    return [
+                        'name' => $component['name'], 
+                        'include' => $name.".".$component['name'],
+                        'require' => $name.".".$component['name']
+                    ];
+                }));
 
 
                 $this->generateComponents($dataView, $name, $components, 'generic');
@@ -212,7 +219,7 @@ class DataViewSeedCommand extends Command
         $components = $this->helper->serializeAttributes($attributes);
 
         foreach ($components as $component) {
-            
+
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name' => sprintf("%s.%s", $name, $component['name']),
                 'type' => 'component',
@@ -224,6 +231,24 @@ class DataViewSeedCommand extends Command
         }
     }
 
+    public function generateRelationsWithHelper(string $name, string $model)
+    {
+        $components = $this->helper->serializeRelations(
+            $this->helper->getRelationsByClassModel($model)
+        );
+
+        foreach ($components as $component) {
+            
+            $view = $this->dataViewManager->findOrCreateOrFail([
+                'name' => sprintf("%s.%s", $name, $component['name']),
+                'type' => 'component',
+                'require' => $name.".".$component['name'],
+                'tag'  => $name,
+            ])->getResource();
+
+            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component, 10)]);
+        }
+    }
     public function generateComponents(DataView $parent = null, string $name, iterable $components = [], string $path = 'generic')
     {
         foreach ($components as $component) {
