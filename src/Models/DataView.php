@@ -4,7 +4,6 @@ namespace Amethyst\Models;
 
 use Amethyst\Core\ConfigurableModel;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
@@ -24,7 +23,7 @@ class DataView extends Model implements EntityContract
         $this->ini('amethyst.data-view.data.data-view');
         parent::__construct($attributes);
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

@@ -2,8 +2,8 @@
 
 namespace Amethyst\Helpers;
 
-use Railken\Lem\Attributes;
 use Illuminate\Support\Collection;
+use Railken\Lem\Attributes;
 
 class DataViewHelper
 {
@@ -24,7 +24,8 @@ class DataViewHelper
         })->first();
     }
 
-    public function getKeysFromMorphTo(Attributes\MorphToAttribute $attribute) {
+    public function getKeysFromMorphTo(Attributes\MorphToAttribute $attribute)
+    {
         return $attribute->getManager()->getAttributes()->first(function ($attr) use ($attribute) {
             return $attr->getName() === $attribute->getRelationKey();
         })->getOptions();
@@ -35,14 +36,14 @@ class DataViewHelper
         $result = Collection::make();
 
         foreach ($attributes as $attribute) {
-            $method = sprintf("serialize%sAttribute", $attribute->getType());
+            $method = sprintf('serialize%sAttribute', $attribute->getType());
 
             if (!method_exists($this, $method)) {
-                $method = "serializeBaseAttribute";
+                $method = 'serializeBaseAttribute';
             }
 
             $result = $result->merge(collect($this->$method($attribute)));
-        };
+        }
 
         return $result;
     }
@@ -50,42 +51,42 @@ class DataViewHelper
     public function serializeBaseAttribute(Attributes\BaseAttribute $attribute): iterable
     {
         $params = [
-            'name' => $attribute->getName(),
+            'name'    => $attribute->getName(),
             'extends' => 'attribute-input',
-            'type' => 'attribute',
+            'type'    => 'attribute',
             'options' => [
-                'name'       => $attribute->getName(),
-                'type'       => $attribute->getType(),
-                'hide'       => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object']),
+                'name' => $attribute->getName(),
+                'type' => $attribute->getType(),
+                'hide' => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object'], true),
                 // 'fillable'   => (bool) $attribute->getFillable(),
-                'required'   => (bool) $attribute->getRequired(),
-                'unique'     => (bool) $attribute->getUnique(),
-                'default'    => $attribute->getDefault($attribute->getManager()->newEntity()),
+                'required' => (bool) $attribute->getRequired(),
+                'unique'   => (bool) $attribute->getUnique(),
+                'default'  => $attribute->getDefault($attribute->getManager()->newEntity()),
                 // 'descriptor' => $attribute->getDescriptor(),
                 'extract' => [
                     'attributes' => [
                         $attribute->getName() => [
                             'path' => $attribute->getName(),
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'readable' => [
-                    'type' => 'default',
-                    'label' => "{{ value }}",
+                    'type'  => 'default',
+                    'label' => '{{ value }}',
                 ],
                 // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
                         $attribute->getName() => [
-                            'path' => 'value'
-                        ]
-                    ]
+                            'path' => 'value',
+                        ],
+                    ],
                 ],
                 'select' => [
                     'attributes' => [
-                        $attribute->getName() => "{{ resource.{$attribute->getName()} }}"
+                        $attribute->getName() => "{{ resource.{$attribute->getName()} }}",
                     ],
-                ]
+                ],
             ],
         ];
 
@@ -100,20 +101,20 @@ class DataViewHelper
             return $attr;
         })->toArray();
     }
-    
+
     public function serializeBelongsToAttribute(Attributes\BelongsToAttribute $attribute): iterable
     {
         $data = $this->getRelationByKeyName($attribute->getManager()->getEntity(), $attribute->getRelationName())['data'];
 
         $params = [
-            'name' => $attribute->getName(),
+            'name'    => $attribute->getName(),
             'extends' => 'attribute-input',
-            'type' => 'attribute',
+            'type'    => 'attribute',
             'options' => [
-                'name'       => $attribute->getName(),
-                'type'       => 'autocomplete',
-                'required'   => (bool) $attribute->getRequired(),
-                'extract' => [
+                'name'     => $attribute->getName(),
+                'type'     => 'autocomplete',
+                'required' => (bool) $attribute->getRequired(),
+                'extract'  => [
                     'attributes' => [
                         $attribute->getRelationName() => [
                             'path' => $attribute->getRelationName(),
@@ -122,50 +123,50 @@ class DataViewHelper
                             'data' => $data,
                             'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
                         ]*/
-                    ]
+                    ],
                 ],
                 'readable' => [
-                    'type' => 'default',
+                    'type'  => 'default',
                     'label' => $attribute
                         ->getRelationManager()
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) { 
+                        ->map(function ($x) {
                             return "{{ value.$x }}";
-                        })->implode(" "),
+                        })->implode(' '),
                 ],
                 'include' => [$attribute->getRelationName()],
-                'select' => [
-                    'data' => $data,
+                'select'  => [
+                    'data'  => $data,
                     'query' => sprintf(
-                        "concat(%s) ct '{{ __key__ }}'", 
+                        "concat(%s) ct '{{ __key__ }}'",
                         $attribute
                             ->getRelationManager()
                             ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute) { 
+                            ->map(function ($x) use ($attribute) {
                                 return "$x";
-                            })->implode(",")
+                            })->implode(',')
                     ),
                     'label' => $attribute
                         ->getRelationManager()
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($attribute) { 
+                        ->map(function ($x) use ($attribute) {
                             return "{{ $x }}";
-                        })->implode(" - "),
+                        })->implode(' - '),
                 ],
                 'persist' => [
                     'attributes' => [
                         $attribute->getName() => [
-                            'template' => "{{ value.id }}"
+                            'template' => '{{ value.id }}',
                         ],
                         $attribute->getRelationName() => [
-                            'path' => "value"
-                        ]
-                    ]
+                            'path' => 'value',
+                        ],
+                    ],
                 ],
                 'actions' => [
                     'update' => sprintf('%s-resource-upsert', $data),
-                ]
-            ]
+                ],
+            ],
         ];
 
         return [$params];
@@ -179,14 +180,14 @@ class DataViewHelper
 
         foreach ($this->getKeysFromMorphTo($attribute) as $key) {
             $params = [
-                'name' => $attribute->getName(),
+                'name'    => $attribute->getName(),
                 'extends' => 'attribute-input',
-                'type' => 'attribute',
+                'type'    => 'attribute',
                 'options' => [
-                    'name'       => $attribute->getName(),
-                    'type'       => 'autocomplete',
-                    'required'   => (bool) $attribute->getRequired(),
-                    'extract' => [
+                    'name'     => $attribute->getName(),
+                    'type'     => 'autocomplete',
+                    'required' => (bool) $attribute->getRequired(),
+                    'extract'  => [
                         'attributes' => [
                             $attribute->getRelationName() => [
                                 'path' => $attribute->getRelationName(),
@@ -195,51 +196,51 @@ class DataViewHelper
                                 'data' => $key,
                                 'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
                             ]*/
-                        ]
+                        ],
                     ],
                     'readable' => [
-                        'type' => 'default',
+                        'type'  => 'default',
                         'label' => $attribute
                             ->getRelationManagerByKey($key)
                             ->getPrimaryAttributeNames()
-                            ->map(function ($x) { 
+                            ->map(function ($x) {
                                 return "{{ value.$x }}";
-                            })->implode(" "),
+                            })->implode(' '),
                     ],
-                    'include' => [$attribute->getRelationName()],
-                    'condition' => sprintf("%s === {{ resource.%s }}", $key, $attribute->getRelationKey()),
-                    'persist' => [
+                    'include'   => [$attribute->getRelationName()],
+                    'condition' => sprintf('%s === {{ resource.%s }}', $key, $attribute->getRelationKey()),
+                    'persist'   => [
                         'attributes' => [
                             $attribute->getName() => [
-                                'template' => "{{ value.id }}"
+                                'template' => '{{ value.id }}',
                             ],
                             $attribute->getRelationName() => [
-                                'path' => "value"
-                            ]
-                        ]
+                                'path' => 'value',
+                            ],
+                        ],
                     ],
                     'select' => [
-                        'data' => $key,
+                        'data'  => $key,
                         'query' => sprintf(
-                            "concat(%s) ct '{{ __key__ }}'", 
+                            "concat(%s) ct '{{ __key__ }}'",
                             $attribute
                                 ->getRelationManagerByKey($key)
                                 ->getPrimaryAttributeNames()
-                                ->map(function ($x) use ($attribute) { 
+                                ->map(function ($x) use ($attribute) {
                                     return "$x";
-                                })->implode(",")
+                                })->implode(',')
                             ),
                         'label' => $attribute
                             ->getRelationManagerByKey($key)
                             ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute) { 
+                            ->map(function ($x) use ($attribute) {
                                 return "{{ $x }}";
-                            })->implode(" - "),
+                            })->implode(' - '),
                     ],
                     'actions' => [
                         'update' => sprintf('%s-resource-upsert', $key),
-                    ]
-                ]
+                    ],
+                ],
             ];
 
             $return[] = $params;

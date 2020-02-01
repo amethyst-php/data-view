@@ -2,9 +2,9 @@
 
 namespace Amethyst\Schemas;
 
+use Amethyst\Managers\DataViewManager;
 use Railken\Lem\Attributes;
 use Railken\Lem\Schema;
-use Amethyst\Managers\DataViewManager;
 
 class DataViewSchema extends Schema
 {

@@ -2,8 +2,8 @@
 
 namespace Amethyst\Providers;
 
-use Amethyst\Core\Providers\CommonServiceProvider;
 use Amethyst\Console\Commands\DataViewSeedCommand;
+use Amethyst\Core\Providers\CommonServiceProvider;
 use Amethyst\Models\ModelHasPermission;
 use Amethyst\Observers\DataViewPermissionObserver;
 use Illuminate\Support\Facades\Artisan;

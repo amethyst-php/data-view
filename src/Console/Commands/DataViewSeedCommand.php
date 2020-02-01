@@ -2,15 +2,14 @@
 
 namespace Amethyst\Console\Commands;
 
+use Amethyst\Helpers\DataViewHelper;
 use Amethyst\Managers\DataViewManager;
+use Amethyst\Models\DataView;
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Railken\Lem\Attributes;
-use Railken\Template\Generators\TextGenerator;
 use Railken\Lem\Contracts\ManagerContract;
-use Amethyst\Models\DataView;
-use Amethyst\Helpers\DataViewHelper;
+use Railken\Template\Generators\TextGenerator;
 use Symfony\Component\Yaml\Yaml;
 
 class DataViewSeedCommand extends Command
@@ -111,70 +110,65 @@ class DataViewSeedCommand extends Command
     public function generateChildren(string $name, ManagerContract $manager, $data)
     {
         $dataViews = $this->dataViewManager->getRepository()->newQuery()->whereIn('name', [
-            sprintf("%s.page.index", $name),
-            sprintf("%s.page.show", $name),
-            sprintf("%s.resource.index", $name),
-            sprintf("%s.resource.upsert", $name),
-            sprintf("%s.resource.show", $name),
+            sprintf('%s.page.index', $name),
+            sprintf('%s.page.show', $name),
+            sprintf('%s.resource.index', $name),
+            sprintf('%s.resource.upsert', $name),
+            sprintf('%s.resource.show', $name),
         ])->get();
 
         foreach ($dataViews as $dataView) {
-
-            if ($dataView->name === sprintf("%s.page.show", $name)) {
-
+            if ($dataView->name === sprintf('%s.page.show', $name)) {
                 // HasMany/MorphMany/HasOne/MorphOne
                 $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['HasMany', 'MorphMany', 'HasOne', 'MorphOne']);
+                    return in_array($relation, ['HasMany', 'MorphMany', 'HasOne', 'MorphOne'], true);
                 });
 
                 $this->generateComponents($dataView, $name, $this->parseRelations($relations), 'tab');
 
                 $this->generateComponents($dataView, $name, [[
-                    'name' => 'main',
-                    'extends' => sprintf("%s.resource.show", $name)
+                    'name'    => 'main',
+                    'extends' => sprintf('%s.resource.show', $name),
                 ]]);
             }
 
-            if ($dataView->name === sprintf("%s.page.index", $name)) {
+            if ($dataView->name === sprintf('%s.page.index', $name)) {
                 $this->generateComponents($dataView, $name, [[
-                    'name' => 'main',
-                    'extends' => sprintf("%s.resource.index", $name)
+                    'name'    => 'main',
+                    'extends' => sprintf('%s.resource.index', $name),
                 ]]);
             }
 
             if (in_array($dataView->name, [
-                sprintf("%s.resource.upsert", $name)
-            ])) {
-
+                sprintf('%s.resource.upsert', $name),
+            ], true)) {
                 $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['MorphToMany', 'BelongsToMany']);
+                    return in_array($relation, ['MorphToMany', 'BelongsToMany'], true);
                 });
 
                 $this->generateComponents(null, $name, $this->parseRelations($relations), 'relation');
-                
+
                 $this->generateAttributesWithHelper($name, $manager->getAttributes());
             }
 
             if (in_array($dataView->name, [
-                sprintf("%s.resource.index", $name),
-                sprintf("%s.resource.upsert", $name),
-                sprintf("%s.resource.show", $name)
-            ])) {
-
+                sprintf('%s.resource.index', $name),
+                sprintf('%s.resource.upsert', $name),
+                sprintf('%s.resource.show', $name),
+            ], true)) {
                 $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['MorphToMany', 'BelongsToMany']);
+                    return in_array($relation, ['MorphToMany', 'BelongsToMany'], true);
                 });
 
                 $attributes = $manager->getAttributes();
 
-
-                if ($dataView->name === sprintf("%s.resource.upsert", $name)) {
+                if ($dataView->name === sprintf('%s.resource.upsert', $name)) {
                     $attributes = $attributes->filter(function ($attribute) {
                         return $attribute->getFillable();
                     });
                 }
 
-                if ($dataView->name === sprintf("%s.resource.show", $name) || $dataView->name === sprintf("%s.resource.index", $name)) {
+                if ($dataView->name === sprintf('%s.resource.show', $name) || $dataView->name === sprintf('%s.resource.index', $name)) {
                     $attributes = $attributes->filter(function ($attribute) {
                         return !$attribute->getHidden();
                     });
@@ -182,15 +176,13 @@ class DataViewSeedCommand extends Command
 
                 $components = $relations->merge($attributes)->map(function ($component) use ($name) {
                     return [
-                        'name' => $component->getName(), 
-                        'include' => $name.".".$component->getName(),
-                        'require' => $name.".".$component->getName()
+                        'name'    => $component->getName(),
+                        'include' => $name.'.'.$component->getName(),
+                        'require' => $name.'.'.$component->getName(),
                     ];
                 });
 
-
                 $this->generateComponents($dataView, $name, $components, 'generic');
-
             }
         }
 
@@ -198,12 +190,12 @@ class DataViewSeedCommand extends Command
         ->getRelationsByClassModel(Arr::get($data, 'model'))
         ->map(function ($i) {
             return $i['name'];
-        })->merge($manager->getAttributes()->map(function($i) {
+        })->merge($manager->getAttributes()->map(function ($i) {
             return $i->getName();
         }));
 
         $this->dataViewManager->getRepository()->getQuery()->whereNotNull('require')->whereNotIn('require', $components->map(function ($i) use ($name) {
-            return $name.".".$i;
+            return $name.'.'.$i;
         }))->where('tag', $name)->delete();
     }
 
@@ -212,15 +204,14 @@ class DataViewSeedCommand extends Command
         $components = $this->helper->serializeAttributes($attributes);
 
         foreach ($components as $component) {
-            
             $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => sprintf("%s.%s", $name, $component['name']),
-                'type' => 'component',
-                'require' => $name.".".$component['name'],
-                'tag'  => $name,
+                'name'    => sprintf('%s.%s', $name, $component['name']),
+                'type'    => 'component',
+                'require' => $name.'.'.$component['name'],
+                'tag'     => $name,
             ])->getResource();
 
-            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component,10)]);
+            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component, 10)]);
         }
     }
 
@@ -228,16 +219,16 @@ class DataViewSeedCommand extends Command
     {
         foreach ($components as $component) {
             $configuration = $this->generator->render($this->getPath('attribute/'.$path.'.yml'), [
-                'name' => $name,
-                'component' => $component
+                'name'      => $name,
+                'component' => $component,
             ]);
 
             $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => sprintf("%s.%s", $parent ? $parent->name : $name, $component['name']),
-                'type' => 'component',
-                'tag'  => $name,
-                'require' => $component['require'] ?? null,
-                'parent_id' => $parent ? $parent->id : null
+                'name'      => sprintf('%s.%s', $parent ? $parent->name : $name, $component['name']),
+                'type'      => 'component',
+                'tag'       => $name,
+                'require'   => $component['require'] ?? null,
+                'parent_id' => $parent ? $parent->id : null,
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => $this->cleanYaml($configuration)]);
@@ -255,10 +246,9 @@ class DataViewSeedCommand extends Command
         $api = '/admin/'.$inflector->pluralize($name);
 
         foreach ($files as $key => $filename) {
-
             $configuration = $this->generator->render($filename, [
-                'name'       => $name,
-                'api'        => $api
+                'name' => $name,
+                'api'  => $api,
             ]);
 
             $fullname = $name.'.'.basename($key, '.yml');
