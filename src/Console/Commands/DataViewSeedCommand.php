@@ -243,7 +243,7 @@ class DataViewSeedCommand extends Command
     public function generate(string $name, ManagerContract $manager, $data, string $type, $files)
     {
         $inflector = new Inflector();
-        $api = '/admin/'.$inflector->pluralize($name);
+        $api = config('amethyst.api.http.data.router.prefix')."/".$name;
 
         foreach ($files as $key => $filename) {
             $configuration = $this->generator->render($filename, [
