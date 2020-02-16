@@ -4,12 +4,17 @@ namespace Amethyst\Helpers;
 
 use Illuminate\Support\Collection;
 use Railken\Lem\Attributes;
+use Railken\EloquentMapper\Contracts\Map as MapContract;
 
 class DataViewHelper
 {
     public function getRelationsByClassModel(string $classModel)
     {
-        return collect(\Railken\EloquentMapper\Mapper::relations($classModel))->map(function ($relation, $key) {
+        $map = app(MapContract::class);
+
+        $relations = $map->relations(new $classModel);
+
+        return collect($relations)->map(function ($relation, $key) {
             return array_merge($relation->toArray(), [
                 'key'  => $key,
                 'data' => app('amethyst')->getNameDataByModel($relation->model),
