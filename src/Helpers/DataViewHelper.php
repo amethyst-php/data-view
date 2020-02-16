@@ -5,7 +5,6 @@ namespace Amethyst\Helpers;
 use Illuminate\Support\Collection;
 use Railken\Lem\Attributes;
 use Railken\EloquentMapper\Contracts\Map as MapContract;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
 
 class DataViewHelper
