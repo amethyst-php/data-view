@@ -65,7 +65,7 @@ class DataViewHelper
             'options' => [
                 'name' => $attribute->getName(),
                 'type' => $attribute->getType(),
-                'hide' => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object'], true),
+                'hide' => false, // 'hide' => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object'], true),
                 // 'fillable'   => (bool) $attribute->getFillable(),
                 'required' => (bool) $attribute->getRequired(),
                 'unique'   => (bool) $attribute->getUnique(),
