@@ -305,8 +305,7 @@ class DataViewSeedCommand extends Command
         $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
 
         if (app('amethyst')->findDataByName($relation['data'])) {
-            $class = app('amethyst')->findManagerByName($relation['data']);
-            $relation['manager'] = new $class();
+            $relation['manager'] = app('amethyst')->findManagerByName($relation['data']);
         }
 
         return $relation;
