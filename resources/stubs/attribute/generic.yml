@@ -1,9 +1,9 @@
-name: {{ component.name }}
+name: ~{{ component.name }}~
 {% if component.extends %}
 
-extends: {{ component.extends }}
+extends: ~{{ component.extends }}~
 {% endif %}
 {% if component.include %}
 
-include: {{ component.include }}
+include: ~{{ component.include }}~
 {% endif %}

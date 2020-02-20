@@ -1,8 +1,6 @@
 label: {{ name }}
 extends: page-index
-permissions: 
-  - {{ name }}.show
 icon: /assets/amethyst/{{ name }}-icon.svg
 options:
   data: {{ name }}
-  api: {{ api }}
+  api: {{ api }}/{{ name }}

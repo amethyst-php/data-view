@@ -2,15 +2,7 @@
 
 namespace Amethyst\Console\Commands;
 
-use Amethyst\Helpers\DataViewHelper;
-use Amethyst\Managers\DataViewManager;
-use Amethyst\Models\DataView;
-use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
-use Railken\Lem\Contracts\ManagerContract;
-use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
 
 class DataViewSeedCommand extends Command
 {
@@ -22,33 +14,6 @@ class DataViewSeedCommand extends Command
     protected $signature = 'amethyst:data-view:seed {data?}';
 
     /**
-     * @var DataViewManager
-     */
-    protected $dataViewManager;
-
-    /**
-     * @var TextGenerator
-     */
-    protected $generator;
-
-    /**
-     * @var DataViewHelper
-     */
-    protected $helper;
-
-    /**
-     * Create a new instance.
-     */
-    public function __construct()
-    {
-        $this->dataViewManager = new DataViewManager();
-        $this->generator = new TextGenerator();
-        $this->helper = new DataViewHelper();
-
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -56,258 +21,27 @@ class DataViewSeedCommand extends Command
     public function handle()
     {
         $data = !empty($this->argument('data'))
-            ? collect([$this->argument('data') => app('amethyst')->findDataByName($this->argument('data'))])
+            ? collect([$this->argument('data') => app('amethyst')->findManagerByName($this->argument('data'))])
             : app('amethyst')->getData();
 
         $bar = $this->output->createProgressBar($data->count());
 
-        $this->info('Generating data-views...');
-        $this->info('');
+        $this->info("Generating data-views...\n");
 
         $bar->start();
 
-        $generator = new TextGenerator();
+        $data->map(function ($manager, $key) use ($bar) {
 
-        $componentFiles = collect(glob($this->getPath('component/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
-        $routesFiles = collect(glob($this->getPath('routes/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
-        $serviceFiles = collect(glob($this->getPath('service/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
-        $data->map(function ($data) use ($bar, $componentFiles, $routesFiles, $serviceFiles) {
-            $name = app('amethyst')->getNameDataByModel(Arr::get($data, 'model'));
-            $manager = app(Arr::get($data, 'manager'));
-
-            $this->generate($name, $manager, $data, 'component', $componentFiles);
-            $this->generate($name, $manager, $data, 'routes', $routesFiles);
-            $this->generate($name, $manager, $data, 'service', $serviceFiles);
-            $this->generateChildren($name, $manager, $data);
-
+            app('amethyst.data-view')->create($manager);
+            
             $bar->advance();
 
-            event(new \Amethyst\Events\DataViewDataGenerated($name));
+            event(new \Amethyst\Events\DataViewDataGenerated($key));
         });
 
         $bar->finish();
 
         event(new \Amethyst\Events\DataViewOperationCompleted());
-        $this->info('');
-        $this->info('');
-        $this->info('Done!');
     }
-
-    public function getPath(string $path)
-    {
-        return __DIR__.'/../../../resources/stubs/'.$path;
-    }
-
-    public function generateChildren(string $name, ManagerContract $manager, $data)
-    {
-        $dataViews = $this->dataViewManager->getRepository()->newQuery()->whereIn('name', [
-            sprintf('%s.page.index', $name),
-            sprintf('%s.page.show', $name),
-            sprintf('%s.resource.index', $name),
-            sprintf('%s.resource.upsert', $name),
-            sprintf('%s.resource.show', $name),
-        ])->get();
-
-        foreach ($dataViews as $dataView) {
-            if ($dataView->name === sprintf('%s.page.show', $name)) {
-                // HasMany/MorphMany/HasOne/MorphOne
-                $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['HasMany', 'MorphMany', 'HasOne', 'MorphOne', 'MorphToMany', 'BelongsToMany']);
-                });
-
-                $this->generateComponents($dataView, $name, $this->parseRelations($relations), 'tab');
-
-                $this->generateComponents($dataView, $name, [[
-                    'name'    => 'main',
-                    'extends' => sprintf('%s.resource.show', $name),
-                ]]);
-            }
-
-            if ($dataView->name === sprintf('%s.page.index', $name)) {
-                $this->generateComponents($dataView, $name, [[
-                    'name'    => 'main',
-                    'extends' => sprintf('%s.resource.index', $name),
-                ]]);
-            }
-
-            if (in_array($dataView->name, [
-                sprintf('%s.resource.upsert', $name),
-            ], true)) {
-                $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation, ['MorphToMany', 'BelongsToMany'], true);
-                });
-
-                //$this->generateComponents(null, $name, $this->parseRelations($relations), 'relation');
-                
-                $this->generateAttributesWithHelper($name, $manager->getAttributes());
-                $this->generateRelationsWithHelper($name, Arr::get($data, 'model'));
-            }
-
-            if (in_array($dataView->name, [
-                sprintf('%s.resource.index', $name),
-                sprintf('%s.resource.upsert', $name),
-                sprintf('%s.resource.show', $name),
-            ], true)) {
-                $relations = $this->helper->getRelationsByClassModel(Arr::get($data, 'model'))->filter(function ($relation) {
-                    return in_array($relation['type'], ['MorphToMany', 'BelongsToMany']);
-                });
-
-                $attributes = $manager->getAttributes();
-
-                if ($dataView->name === sprintf('%s.resource.upsert', $name)) {
-                    $attributes = $attributes->filter(function ($attribute) {
-                        return $attribute->getFillable();
-                    });
-                }
-
-                if ($dataView->name === sprintf('%s.resource.show', $name) || $dataView->name === sprintf('%s.resource.index', $name)) {
-                    $attributes = $attributes->filter(function ($attribute) {
-                        return !$attribute->getHidden();
-                    });
-                }
-
-                $components = $attributes->map(function ($component) use ($name) {
-                    return [
-                        'name'    => $component->getName(),
-                        'include' => $name.'.'.$component->getName(),
-                        'require' => $name.'.'.$component->getName(),
-                    ];
-                })->merge($relations->map(function ($component) use ($name) {
-                    return [
-                        'name' => $component['name'], 
-                        'include' => $name.".".$component['name'],
-                        'require' => $name.".".$component['name']
-                    ];
-                }));
-
-                $this->generateComponents($dataView, $name, $components, 'generic');
-            }
-        }
-
-        $components = $this->helper
-        ->getRelationsByClassModel(Arr::get($data, 'model'))
-        ->map(function ($i) {
-            return $i['name'];
-        })->merge($manager->getAttributes()->map(function ($i) {
-            return $i->getName();
-        }));
-
-        $this->dataViewManager->getRepository()->getQuery()->whereNotNull('require')->whereNotIn('require', $components->map(function ($i) use ($name) {
-            return $name.'.'.$i;
-        }))->where('tag', $name)->delete();
-    }
-
-    public function generateAttributesWithHelper(string $name, iterable $attributes)
-    {
-        $components = $this->helper->serializeAttributes($attributes);
-
-        foreach ($components as $component) {
-
-            $view = $this->dataViewManager->findOrCreateOrFail([
-                'name'    => sprintf('%s.%s', $name, $component['name']),
-                'type'    => 'component',
-                'require' => $name.'.'.$component['name'],
-                'tag'     => $name,
-            ])->getResource();
-
-            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component, 10)]);
-        }
-    }
-
-    public function generateRelationsWithHelper(string $name, string $model)
-    {
-        $components = $this->helper->serializeRelations(
-            $this->helper->getRelationsByClassModel($model)
-        );
-
-        foreach ($components as $component) {
-            
-            $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => sprintf("%s.%s", $name, $component['name']),
-                'type' => 'component',
-                'require' => $name.".".$component['name'],
-                'tag'  => $name,
-            ])->getResource();
-
-            $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component, 10)]);
-        }
-    }
-    public function generateComponents(DataView $parent = null, string $name, iterable $components = [], string $path = 'generic')
-    {
-        foreach ($components as $component) {
-            $configuration = $this->generator->render($this->getPath('attribute/'.$path.'.yml'), [
-                'name'      => $name,
-                'component' => $component,
-            ]);
-
-            $view = $this->dataViewManager->findOrCreateOrFail([
-                'name'      => sprintf('%s.%s', $parent ? $parent->name : $name, $component['name']),
-                'type'      => 'component',
-                'tag'       => $name,
-                'require'   => $component['require'] ?? null,
-                'parent_id' => $parent ? $parent->id : null,
-            ])->getResource();
-
-            $this->dataViewManager->updateOrFail($view, ['config' => $this->cleanYaml($configuration)]);
-        }
-    }
-
-    public function cleanYaml(string $configuration)
-    {
-        return preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $configuration);
-    }
-
-    public function generate(string $name, ManagerContract $manager, $data, string $type, $files)
-    {
-        $inflector = new Inflector();
-        $api = config('amethyst.api.http.data.router.prefix')."/".$name;
-
-        foreach ($files as $key => $filename) {
-            $configuration = $this->generator->render($filename, [
-                'name' => $name,
-                'api'  => $api,
-            ]);
-
-            $fullname = $name.'.'.basename($key, '.yml');
-
-            $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => $fullname,
-                'type' => $type,
-                'tag'  => $name,
-            ])->getResource();
-
-            $this->dataViewManager->updateOrFail($view, ['config' => $this->cleanYaml($configuration)]);
-
-            event(new \Amethyst\Events\DataViewDataUpdated($view));
-        }
-    }
-
-    public function parseRelations($relations)
-    {
-        foreach ($relations as $k => $relation) {
-            $relations[$k] = $this->parseRelation($relation);
-        }
-
-        return $relations;
-    }
-
-    public function parseRelation($relation)
-    {
-        $relation['scope'] = app('amethyst')->parseScope($relation['model'], $relation['scope']);
-
-        if (app('amethyst')->findDataByName($relation['data'])) {
-            $relation['manager'] = app('amethyst')->findManagerByName($relation['data']);
-        }
-
-        return $relation;
-    }
+   
 }
