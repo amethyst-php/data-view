@@ -2,31 +2,22 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\Models;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
 use Amethyst\DataSchema\Manager;
-use Amethyst\Helpers\DataViewHelper;
-use Amethyst\Managers\DataViewManager;
-use Amethyst\Models\DataView;
-use Doctrine\Common\Inflector\Inflector;
-use Illuminate\Support\Arr;
-use Railken\Lem\Contracts\ManagerContract;
-use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
 use Illuminate\Database\Eloquent\Model;
-use Railken\EloquentMapper\Contracts\Map as MapContract;
 use Railken\Bag;
+use Railken\EloquentMapper\Contracts\Map as MapContract;
+use Railken\Lem\Contracts\ManagerContract;
+use Symfony\Component\Yaml\Yaml;
 
 trait HasRelations
 {
     use HasRelationSerializer;
 
     /**
-     * Create a new relation and attach it to all views
+     * Create a new relation and attach it to all views.
      *
      * @param ManagerContract $manager
-     * @param Bag $relation
+     * @param Bag             $relation
      */
     public function createRelation(ManagerContract $manager, Bag $relation)
     {
@@ -47,8 +38,8 @@ trait HasRelations
 
         $configuration = [
             'name'    => $nameRelation,
-            'include' => $name.".".$nameRelation,
-            'require' => $name.".".$nameRelation 
+            'include' => $name.'.'.$nameRelation,
+            'require' => $name.'.'.$nameRelation,
         ];
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
@@ -65,18 +56,17 @@ trait HasRelations
     }
 
     /**
-     * Create a new relation and attach it to all views
+     * Create a new relation and attach it to all views.
      *
      * @param string $manager
      * @param string $nameRelation
      */
     public function createRelationByName(string $name, string $nameRelation)
     {
-
     }
 
     /**
-     * Remove arelation and attach it to all views
+     * Remove arelation and attach it to all views.
      *
      * @param string $data
      * @param string $nameRelation
@@ -87,7 +77,7 @@ trait HasRelations
     }
 
     /**
-     * Rename a relation
+     * Rename a relation.
      *
      * @param string $data
      * @param string $oldNmeRelation
@@ -98,14 +88,13 @@ trait HasRelations
         // ...
     }
 
-
     /**
-     * Create all relations given manager
+     * Create all relations given manager.
      *
      * @param ManagerContract $manager
      */
     public function createRelations(ManagerContract $manager)
-    {     
+    {
         $dataViews = $this->getAllMainViewsByData($manager->getName());
 
         $map = app(MapContract::class);
@@ -136,21 +125,18 @@ trait HasRelations
 
         return $relation;
     }
-        
 
     public function generateRelationsWithHelper(string $name, Model $model)
     {
         foreach ($components as $component) {
-            
             $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => sprintf("%s.%s", $name, $component['name']),
-                'type' => 'component',
-                'require' => $name.".".$component['name'],
-                'tag'  => $name,
+                'name'    => sprintf('%s.%s', $name, $component['name']),
+                'type'    => 'component',
+                'require' => $name.'.'.$component['name'],
+                'tag'     => $name,
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($component, 10)]);
         }
     }
-
 }

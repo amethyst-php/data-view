@@ -2,17 +2,14 @@
 
 namespace Amethyst\Services;
 
-use Illuminate\Support\Collection;
-use Railken\Lem\Attributes;
-use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
-use Railken\Bag;
+use Railken\Lem\Attributes;
 
 trait HasRelationSerializer
 {
     public function serializeRelation(array $relation): array
     {
-        $method = sprintf("serialize%s", $relation['type']);
+        $method = sprintf('serialize%s', $relation['type']);
 
         if (method_exists($this, $method)) {
             return $this->$method($relation);
@@ -189,83 +186,82 @@ trait HasRelationSerializer
         $foreignPivotKey = $relation['foreignPivotKey'];
 
         $fixed = [
-            $foreignPivotKey => '{{ resource.id }}',
+            $foreignPivotKey       => '{{ resource.id }}',
             $relation['morphType'] => $relation['morphClass'],
         ];
 
         foreach ($relation['scope'] as $scope) {
             $column = $scope['column'];
-            $columns = explode(".", $column);
+            $columns = explode('.', $column);
             if ((count($columns) > 1) && $columns[0] === $relation['table']) {
                 $columns = [$columns[1]];
             }
 
-            $column = implode(".", $columns);
+            $column = implode('.', $columns);
 
             $fixed[$column] = $scope['value'];
         }
 
         $params = [
-            'name' => $name,
+            'name'    => $name,
             'extends' => 'attribute-input',
-            'type' => 'attribute',
+            'type'    => 'attribute',
             'options' => [
-                'name'       => $name,
-                'type'       => 'autocomplete',
-                'hide'       => false,
-                'required'   => false,
-                'multiple'   => true,
-                'default'    => [],
-                'include'    => [$name],
-                'extract'    => [
+                'name'     => $name,
+                'type'     => 'autocomplete',
+                'hide'     => false,
+                'required' => false,
+                'multiple' => true,
+                'default'  => [],
+                'include'  => [$name],
+                'extract'  => [
                     'attributes' => [
                         $name => [
                             'path' => $name,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'readable' => [
-                    'type' => 'default',
+                    'type'  => 'default',
                     'label' => $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) { 
+                        ->map(function ($x) {
                             return "{{ value.$x }}";
-                        })->implode(" "),
+                        })->implode(' '),
                 ],
                 'select' => [
-                    'data' => $relation['data'],
+                    'data'  => $relation['data'],
                     'query' => sprintf(
                         "concat(%s) ct '{{ __key__ }}'",
                         $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) { 
+                        ->map(function ($x) {
                             return "$x";
-                        })->implode(",")
+                        })->implode(',')
                     ),
                     'label' => $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) { 
+                        ->map(function ($x) {
                             return "{{ $x }}";
-                        })->implode(" - "),
+                        })->implode(' - '),
                 ],
                 'persist' => [
                     'attributes' => [
                         $name => [
-                            'path' => "value"
-                        ]
+                            'path' => 'value',
+                        ],
                     ],
                     'data' => [
-                        'name' => app('amethyst')->getNameDataByModel($relation['intermediate']),
-                        'scopes' => $fixed,
+                        'name'       => app('amethyst')->getNameDataByModel($relation['intermediate']),
+                        'scopes'     => $fixed,
                         'attributes' => [
                             $relatedPivotKey => '{{ value.id }}',
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ],
         ];
 
         return [$params];
     }
-
 }

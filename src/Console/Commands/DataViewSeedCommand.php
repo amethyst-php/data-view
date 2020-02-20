@@ -31,9 +31,8 @@ class DataViewSeedCommand extends Command
         $bar->start();
 
         $data->map(function ($manager, $key) use ($bar) {
-
             app('amethyst.data-view')->create($manager);
-            
+
             $bar->advance();
 
             event(new \Amethyst\Events\DataViewDataGenerated($key));
@@ -43,5 +42,4 @@ class DataViewSeedCommand extends Command
 
         event(new \Amethyst\Events\DataViewOperationCompleted());
     }
-   
 }

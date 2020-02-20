@@ -2,19 +2,8 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\Models;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
-use Amethyst\DataSchema\Manager;
-use Amethyst\Helpers\DataViewHelper;
-use Amethyst\Managers\DataViewManager;
-use Amethyst\Models\DataView;
-use Doctrine\Common\Inflector\Inflector;
-use Illuminate\Support\Arr;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasData
 {
@@ -25,9 +14,9 @@ trait HasData
     {
         return __DIR__.'/../../resources/stubs/'.$path;
     }
-    
+
     /**
-     * Create a new data
+     * Create a new data.
      *
      * @param string $name
      */
@@ -52,24 +41,24 @@ trait HasData
         $this->generate($name, $manager, 'component', $componentFiles);
         $this->generate($name, $manager, 'routes', $routesFiles);
         $this->generate($name, $manager, 'service', $serviceFiles);
-        
+
         $this->generateChildren($name, $manager);
 
         $this->createAttributes($manager);
         $this->createRelations($manager);
     }
+
     /**
-     * Create a new data
+     * Create a new data.
      *
      * @param string $name
      */
     public function createByName(string $name)
     {
-
     }
 
     /**
-     * Rename data
+     * Rename data.
      *
      * @param string $oldName
      * @param string $newName
@@ -80,7 +69,7 @@ trait HasData
     }
 
     /**
-     * Remove data
+     * Remove data.
      *
      * @param string $name
      */
@@ -111,6 +100,5 @@ trait HasData
                 ]);
             }
         }
-
     }
 }

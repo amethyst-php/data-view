@@ -2,10 +2,7 @@
 
 namespace Amethyst\Services;
 
-use Illuminate\Support\Collection;
 use Railken\Lem\Attributes;
-use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasAttributeSerializer
 {
@@ -23,11 +20,11 @@ trait HasAttributeSerializer
     public function serializeBaseAttribute(Attributes\BaseAttribute $attribute): iterable
     {
         $params = [
-            'name'    => "~".$attribute->getName()."~",
+            'name'    => '~'.$attribute->getName().'~',
             'extends' => 'attribute-input',
             'type'    => 'attribute',
             'options' => [
-                'name' => "~".$attribute->getName()."~",
+                'name' => '~'.$attribute->getName().'~',
                 'type' => $attribute->getType(),
                 'hide' => false, // 'hide' => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object'], true),
                 // 'fillable'   => (bool) $attribute->getFillable(),
@@ -38,7 +35,7 @@ trait HasAttributeSerializer
                 'extract' => [
                     'attributes' => [
                         $attribute->getName() => [
-                            'path' => "~".$attribute->getName()."~",
+                            'path' => '~'.$attribute->getName().'~',
                         ],
                     ],
                 ],
@@ -49,14 +46,14 @@ trait HasAttributeSerializer
                 // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
-                        "~".$attribute->getName()."~" => [
+                        '~'.$attribute->getName().'~' => [
                             'path' => 'value',
                         ],
                     ],
                 ],
                 'select' => [
                     'attributes' => [
-                        "~".$attribute->getName()."~" => "{{ resource.~{$attribute->getName()}~ }}",
+                        '~'.$attribute->getName().'~' => "{{ resource.~{$attribute->getName()}~ }}",
                     ],
                 ],
             ],
@@ -73,5 +70,4 @@ trait HasAttributeSerializer
             return $attr;
         })->toArray();
     }
-
 }

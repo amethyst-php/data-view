@@ -2,19 +2,13 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\Models;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
 use Amethyst\DataSchema\Manager;
-use Amethyst\Helpers\DataViewHelper;
 use Amethyst\Managers\DataViewManager;
 use Amethyst\Models\DataView;
 use Doctrine\Common\Inflector\Inflector;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
-use Illuminate\Database\Eloquent\Model;
 
 class DataViewService
 {
@@ -31,7 +25,7 @@ class DataViewService
     protected $generator;
 
     /**
-     * Create a new instance
+     * Create a new instance.
      */
     public function __construct()
     {
@@ -40,7 +34,7 @@ class DataViewService
     }
 
     /**
-     * Get manager by name
+     * Get manager by name.
      *
      * @param string $name
      *
@@ -52,7 +46,7 @@ class DataViewService
     }
 
     /**
-     * Retrieve all main views by data
+     * Retrieve all main views by data.
      *
      * @param string $name
      *
@@ -68,11 +62,11 @@ class DataViewService
             sprintf('%s.resource.index', $enclosed),
             sprintf('%s.resource.upsert', $enclosed),
             sprintf('%s.resource.show', $enclosed),
-        ])->get(); 
+        ])->get();
     }
-    
+
     /**
-     * Enclose data and subcomponent in reference variable placeholder
+     * Enclose data and subcomponent in reference variable placeholder.
      *
      * @param string $data
      * @param string $sub
@@ -81,15 +75,14 @@ class DataViewService
      */
     public function enclose(string $data, string $sub = null): string
     {
-    	$arr = [$data];
+        $arr = [$data];
 
-    	if ($sub) {
-    		$arr[] = $sub;
-    	}
+        if ($sub) {
+            $arr[] = $sub;
+        }
 
-    	return "~".implode(".", $arr)."~";
+        return '~'.implode('.', $arr).'~';
     }
-
 
     public function generateComponents(DataView $parent = null, string $name, $component, string $path = 'generic')
     {
@@ -127,13 +120,13 @@ class DataViewService
                 'api'  => $api,
             ]);
 
-            $fullname = $this->enclose($name).".".basename($key, '.yml');
+            $fullname = $this->enclose($name).'.'.basename($key, '.yml');
 
             $view = $this->dataViewManager->findOrCreateOrFail([
-                'name' => $fullname,
-                'type' => $type,
-                'tag'  => $name,
-                'require' => $name
+                'name'    => $fullname,
+                'type'    => $type,
+                'tag'     => $name,
+                'require' => $name,
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => $this->cleanYaml($configuration)]);

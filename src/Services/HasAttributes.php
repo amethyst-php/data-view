@@ -2,29 +2,19 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\Models;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
 use Amethyst\DataSchema\Manager;
-use Amethyst\Helpers\DataViewHelper;
-use Amethyst\Managers\DataViewManager;
-use Amethyst\Models\DataView;
-use Doctrine\Common\Inflector\Inflector;
-use Illuminate\Support\Arr;
-use Railken\Lem\Contracts\ManagerContract;
-use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
-use Illuminate\Database\Eloquent\Model;
 use Railken\Lem\Attributes\BaseAttribute;
+use Railken\Lem\Contracts\ManagerContract;
+use Symfony\Component\Yaml\Yaml;
 
 trait HasAttributes
-{   
+{
     use HasAttributeSerializer;
 
     /**
-     * Create a new attribute
+     * Create a new attribute.
      *
-     * @param ManagerContract $manager
+     * @param ManagerContract                       $manager
      * @param \Railken\Lem\Attributes\BaseAttribute $attribute
      */
     public function createAttribute(ManagerContract $manager, BaseAttribute $attribute)
@@ -46,8 +36,8 @@ trait HasAttributes
 
         $configuration = [
             'name'    => $nameAttribute,
-            'include' => $name.".".$nameAttribute,
-            'require' => $name.".".$nameAttribute 
+            'include' => $name.'.'.$nameAttribute,
+            'require' => $name.'.'.$nameAttribute,
         ];
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
@@ -64,7 +54,7 @@ trait HasAttributes
     }
 
     /**
-     * Create an attribute and attach it to all views
+     * Create an attribute and attach it to all views.
      *
      * @param string $name
      * @param string $nameAttribute
@@ -81,7 +71,7 @@ trait HasAttributes
     }
 
     /**
-     * Remove an attribute and attach it to all views
+     * Remove an attribute and attach it to all views.
      *
      * @param string $name
      * @param string $nameAttribute
@@ -98,7 +88,7 @@ trait HasAttributes
     }
 
     /**
-     * Rename an attribute
+     * Rename an attribute.
      *
      * @param string $name
      * @param string $oldNmeAttribute
@@ -116,15 +106,14 @@ trait HasAttributes
     }
 
     /**
-     * Create attributes from data
+     * Create attributes from data.
      *
      * @param string $name
      */
     public function createAttributes(ManagerContract $manager)
-    {     
+    {
         foreach ($manager->getAttributes() as $attribute) {
             $this->createAttribute($manager, $attribute);
         }
     }
-
 }
