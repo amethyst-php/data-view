@@ -4,9 +4,9 @@ namespace Amethyst\Services;
 
 use Amethyst\DataSchema\Manager;
 use Railken\Lem\Attributes\BaseAttribute;
+use Railken\Lem\Attributes\BelongsToAttribute;
 use Railken\Lem\Contracts\ManagerContract;
 use Symfony\Component\Yaml\Yaml;
-use Railken\Lem\Attributes\BelongsToAttribute;
 
 trait HasAttributes
 {
@@ -39,12 +39,11 @@ trait HasAttributes
         ])->getResource();
 
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeAttribute($attribute), 10)]);
-        
-        $configuration = [
-            'name'    => "~".$name.".".$nameAttribute."~",
-            'include' => "~".$name.'.'.$nameAttribute."~"
-        ];
 
+        $configuration = [
+            'name'    => '~'.$name.'.'.$nameAttribute.'~',
+            'include' => '~'.$name.'.'.$nameAttribute.'~',
+        ];
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
             $view = $this->dataViewManager->findOrCreateOrFail([

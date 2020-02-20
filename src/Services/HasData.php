@@ -25,7 +25,7 @@ trait HasData
     public function create(ManagerContract $manager)
     {
         $name = $manager->getName();
-        
+
         $generator = new TextGenerator();
 
         $componentFiles = collect(glob($this->getPath('component/*')))->mapWithKeys(function ($file) use ($generator) {

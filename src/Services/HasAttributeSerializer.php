@@ -55,7 +55,7 @@ trait HasAttributeSerializer
                 ],
                 'select' => [
                     'attributes' => [
-                        $nameComponent => "{{ resource.".$nameComponent." }}",
+                        $nameComponent => '{{ resource.'.$nameComponent.' }}',
                     ],
                 ],
             ],

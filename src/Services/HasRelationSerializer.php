@@ -22,7 +22,7 @@ trait HasRelationSerializer
     {
         $manager = app('amethyst')->get($name);
 
-        $attribute = $manager->getAttributes()->first(function($attribute) use ($relation) {
+        $attribute = $manager->getAttributes()->first(function ($attribute) use ($relation) {
             return $attribute->getName() === $relation['localKey'];
         });
 
@@ -58,7 +58,7 @@ trait HasRelationSerializer
                         ->getRelationManager()
                         ->getPrimaryAttributeNames()
                         ->map(function ($x) use ($relatedName) {
-                            return "{{ value.~".$relatedName."$x~ }}";
+                            return '{{ value.~'.$relatedName."$x~ }}";
                         })->implode(' '),
                 ],
                 'include' => [$attribute->getRelationName()],
@@ -70,7 +70,7 @@ trait HasRelationSerializer
                             ->getRelationManager()
                             ->getPrimaryAttributeNames()
                             ->map(function ($x) use ($attribute, $relatedName) {
-                                return "~".$relatedName.".$x~";
+                                return '~'.$relatedName.".$x~";
                             })->implode(',')
                     ),
                     'label' => $attribute
@@ -103,7 +103,7 @@ trait HasRelationSerializer
     {
         $manager = app('amethyst')->get($name);
 
-        $attribute = $manager->getAttributes()->first(function($attribute) use ($relation) {
+        $attribute = $manager->getAttributes()->first(function ($attribute) use ($relation) {
             return $attribute->getName() === $relation['localKey'];
         });
 

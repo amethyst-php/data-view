@@ -3,33 +3,31 @@
 namespace Amethyst\Services;
 
 use Railken\Lem\Contracts\ManagerContract;
-
 use Symfony\Component\Yaml\Yaml;
 
 trait HasRoutes
 {
-    
-   /**
-    * Generate routes by manager
-    *
-    * @param ManagerContract $manager
-    */
-   public function createRoutes(ManagerContract $manager)
-   {
+    /**
+     * Generate routes by manager.
+     *
+     * @param ManagerContract $manager
+     */
+    public function createRoutes(ManagerContract $manager)
+    {
         $name = $manager->getName();
 
         $enclosed = $this->enclose($name);
 
         $configuration = [
             [
-                'path' => $enclosed,
-                'name' => $enclosed.".index",
-                'component' => $enclosed.".page.index"
+                'path'      => $enclosed,
+                'name'      => $enclosed.'.index',
+                'component' => $enclosed.'.page.index',
             ],
             [
-                'path' => $enclosed."/:id",
-                'name' => $enclosed.".show",
-                'component' => $enclosed.".page.show"
+                'path'      => $enclosed.'/:id',
+                'name'      => $enclosed.'.show',
+                'component' => $enclosed.'.page.show',
             ],
         ];
 
@@ -41,5 +39,5 @@ trait HasRoutes
         ])->getResource();
 
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
-   }
+    }
 }

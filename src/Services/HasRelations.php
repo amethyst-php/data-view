@@ -37,12 +37,11 @@ trait HasRelations
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeRelation($name, $relation->toArray()), 10)]);
 
         $configuration = [
-            'name'    => "~".$name.".".$nameRelation."~",
-            'include' => "~".$name.'.'.$nameRelation."~"
+            'name'    => '~'.$name.'.'.$nameRelation.'~',
+            'include' => '~'.$name.'.'.$nameRelation.'~',
         ];
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
-
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',
