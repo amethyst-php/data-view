@@ -7,33 +7,44 @@ use Railken\Lem\Attributes;
 
 trait HasRelationSerializer
 {
-    public function serializeRelation(array $relation): array
+    public function serializeRelation(string $name, array $relation): array
     {
         $method = sprintf('serialize%s', $relation['type']);
 
         if (method_exists($this, $method)) {
-            return $this->$method($relation);
+            return $this->$method($name, $relation);
         }
 
         return [];
     }
 
-    public function serializeBelongsToAttribute(Attributes\BelongsToAttribute $attribute): iterable
+    public function serializeBelongsTo($name, $relation): iterable
     {
+        $manager = app('amethyst')->get($name);
+
+        $attribute = $manager->getAttributes()->first(function($attribute) use ($relation) {
+            return $attribute->getName() === $relation['localKey'];
+        });
+
         $data = $attribute->getManager()->newEntity()->getMorphClass();
 
+        $nameComponent = $this->enclose($name, $relation['name']);
+        $nameComponentField = $this->enclose($name, $attribute->getName());
+
+        $relatedName = $relation['related'];
+
         $params = [
-            'name'    => $attribute->getName(),
+            'name'    => $nameComponent,
             'extends' => 'attribute-input',
             'type'    => 'attribute',
             'options' => [
-                'name'     => $attribute->getName(),
+                'name'     => $nameComponent,
                 'type'     => 'autocomplete',
                 'required' => (bool) $attribute->getRequired(),
                 'extract'  => [
                     'attributes' => [
-                        $attribute->getRelationName() => [
-                            'path' => $attribute->getRelationName(),
+                        $nameComponent => [
+                            'path' => $nameComponent,
                         ],
                         /*$attribute->getName() => [
                             'data' => $data,
@@ -46,8 +57,8 @@ trait HasRelationSerializer
                     'label' => $attribute
                         ->getRelationManager()
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) {
-                            return "{{ value.$x }}";
+                        ->map(function ($x) use ($relatedName) {
+                            return "{{ value.~".$relatedName."$x~ }}";
                         })->implode(' '),
                 ],
                 'include' => [$attribute->getRelationName()],
@@ -58,23 +69,23 @@ trait HasRelationSerializer
                         $attribute
                             ->getRelationManager()
                             ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute) {
-                                return "$x";
+                            ->map(function ($x) use ($attribute, $relatedName) {
+                                return "~".$relatedName.".$x~";
                             })->implode(',')
                     ),
                     'label' => $attribute
                         ->getRelationManager()
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($attribute) {
-                            return "{{ $x }}";
+                        ->map(function ($x) use ($attribute, $relatedName) {
+                            return "{{ ~$relatedName.$x~ }}";
                         })->implode(' - '),
                 ],
                 'persist' => [
                     'attributes' => [
-                        $attribute->getName() => [
+                        $nameComponentField => [
                             'template' => '{{ value.id }}',
                         ],
-                        $attribute->getRelationName() => [
+                        $nameComponent => [
                             'path' => 'value',
                         ],
                     ],
@@ -88,23 +99,32 @@ trait HasRelationSerializer
         return [$params];
     }
 
-    public function serializeMorphToAttribute(Attributes\MorphToAttribute $attribute): iterable
+    public function serializeMorphTo($name, $relation): iterable
     {
-        $return = [];
+        $manager = app('amethyst')->get($name);
+
+        $attribute = $manager->getAttributes()->first(function($attribute) use ($relation) {
+            return $attribute->getName() === $relation['localKey'];
+        });
+
+        $data = $attribute->getManager()->newEntity()->getMorphClass();
+
+        $nameComponent = $this->enclose($name, $relation['name']);
+        $nameComponentField = $this->enclose($name, $attribute->getName());
 
         foreach ($this->getKeysFromMorphTo($attribute) as $key) {
             $params = [
-                'name'    => $attribute->getName(),
+                'name'    => $nameComponent,
                 'extends' => 'attribute-input',
                 'type'    => 'attribute',
                 'options' => [
-                    'name'     => $attribute->getName(),
+                    'name'     => $nameComponent,
                     'type'     => 'autocomplete',
                     'required' => (bool) $attribute->getRequired(),
                     'extract'  => [
                         'attributes' => [
-                            $attribute->getRelationName() => [
-                                'path' => $attribute->getRelationName(),
+                            $nameComponent => [
+                                'path' => $nameComponent,
                             ],
                             /*$attribute->getName() => [
                                 'data' => $key,
@@ -121,14 +141,14 @@ trait HasRelationSerializer
                                 return "{{ value.$x }}";
                             })->implode(' '),
                     ],
-                    'include'   => [$attribute->getRelationName()],
-                    'condition' => sprintf('%s === {{ resource.%s }}', $key, $attribute->getRelationKey()),
+                    'include'   => [$nameComponent],
+                    'condition' => sprintf('~%s~ === {{ resource.%s }}', $key, $attribute->getRelationKey()),
                     'persist'   => [
                         'attributes' => [
-                            $attribute->getName() => [
+                            $nameComponentField => [
                                 'template' => '{{ value.id }}',
                             ],
-                            $attribute->getRelationName() => [
+                            $nameComponent => [
                                 'path' => 'value',
                             ],
                         ],

@@ -23,8 +23,8 @@ trait HasRelations
     {
         $name = $manager->getName();
 
-        $enclosed = $this->enclose($name);
         $nameRelation = $relation->name;
+        $enclosed = $this->enclose($name, $nameRelation);
 
         // Generate a single view-attribute
         $view = $this->dataViewManager->findOrCreateOrFail([
@@ -34,20 +34,20 @@ trait HasRelations
             'tag'     => $name,
         ])->getResource();
 
-        $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeRelation($relation->toArray()), 10)]);
+        $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeRelation($name, $relation->toArray()), 10)]);
 
         $configuration = [
-            'name'    => $nameRelation,
-            'include' => $name.'.'.$nameRelation,
-            'require' => $name.'.'.$nameRelation,
+            'name'    => "~".$name.".".$nameRelation."~",
+            'include' => "~".$name.'.'.$nameRelation."~"
         ];
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
+
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',
                 'tag'       => $name,
-                'require'   => $configuration['require'],
+                'require'   => $name.'.'.$nameRelation,
                 'parent_id' => $dataView->id,
             ])->getResource();
 
@@ -100,8 +100,6 @@ trait HasRelations
         $map = app(MapContract::class);
 
         foreach ($map->relations($manager->newEntity()) as $key => $relation) {
-            print_r($relation);
-
             $this->createRelation($manager, $relation);
         }
     }

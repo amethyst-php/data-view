@@ -6,7 +6,7 @@ use Railken\Lem\Attributes;
 
 trait HasAttributeSerializer
 {
-    public function serializeAttribute(Attributes\BaseAttribute $attribute): array
+    public function serializeRelationAttribute(Attributes\BaseAttribute $attribute): array
     {
         $method = sprintf('serialize%sAttribute', $attribute->getType());
 
@@ -19,14 +19,12 @@ trait HasAttributeSerializer
 
     public function serializeBaseAttribute(Attributes\BaseAttribute $attribute): iterable
     {
-        $nameComponent = $this->enclose($attribute->getManager()->getName(), $attribute->getName());
-
         $params = [
-            'name'    => $nameComponent,
+            'name'    => '~'.$attribute->getName().'~',
             'extends' => 'attribute-input',
             'type'    => 'attribute',
             'options' => [
-                'name' => $nameComponent,
+                'name' => '~'.$attribute->getName().'~',
                 'type' => $attribute->getType(),
                 'hide' => false, // 'hide' => in_array($attribute->getType(), ['LongText', 'Json', 'Array', 'Object'], true),
                 // 'fillable'   => (bool) $attribute->getFillable(),
@@ -36,8 +34,8 @@ trait HasAttributeSerializer
                 // 'descriptor' => $attribute->getDescriptor(),
                 'extract' => [
                     'attributes' => [
-                        $nameComponent => [
-                            'path' => $nameComponent,
+                        $attribute->getName() => [
+                            'path' => '~'.$attribute->getName().'~',
                         ],
                     ],
                 ],
@@ -48,14 +46,14 @@ trait HasAttributeSerializer
                 // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
-                        $nameComponent => [
+                        '~'.$attribute->getName().'~' => [
                             'path' => 'value',
                         ],
                     ],
                 ],
                 'select' => [
                     'attributes' => [
-                        $nameComponent => "{{ resource.".$nameComponent." }}",
+                        '~'.$attribute->getName().'~' => "{{ resource.~{$attribute->getName()}~ }}",
                     ],
                 ],
             ],

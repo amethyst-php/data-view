@@ -39,6 +39,7 @@ class DataViewSeedCommand extends Command
         });
 
         $bar->finish();
+        $this->info("\n");
 
         event(new \Amethyst\Events\DataViewOperationCompleted());
     }

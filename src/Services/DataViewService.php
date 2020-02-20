@@ -91,10 +91,8 @@ class DataViewService
             'component' => $component,
         ]);
 
-        print_r(sprintf("%s.%s\n", $parent ? $parent->name : $name, $this->enclose($name, $component['name'])));
-
         $view = $this->dataViewManager->findOrCreateOrFail([
-            'name'      => sprintf('%s.%s', $parent ? $parent->name : $name, $this->enclose($name, $component['name'])),
+            'name'      => sprintf('%s.%s', $parent ? $parent->name : $name, $name, $component['name']),
             'type'      => 'component',
             'tag'       => $name,
             'require'   => $component['require'] ?? null,
@@ -130,8 +128,6 @@ class DataViewService
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => $this->cleanYaml($configuration)]);
-
-            event(new \Amethyst\Events\DataViewDataUpdated($view));
         }
     }
 }

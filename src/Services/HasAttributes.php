@@ -6,6 +6,7 @@ use Amethyst\DataSchema\Manager;
 use Railken\Lem\Attributes\BaseAttribute;
 use Railken\Lem\Contracts\ManagerContract;
 use Symfony\Component\Yaml\Yaml;
+use Railken\Lem\Attributes\BelongsToAttribute;
 
 trait HasAttributes
 {
@@ -19,6 +20,11 @@ trait HasAttributes
      */
     public function createAttribute(ManagerContract $manager, BaseAttribute $attribute)
     {
+        // Skip MorphTo/BelongsTo
+        if ($attribute instanceof BelongsToAttribute) {
+            return;
+        }
+
         $name = $manager->getName();
         $nameAttribute = $attribute->getName();
 
@@ -26,26 +32,26 @@ trait HasAttributes
 
         // Generate a single view-attribute
         $view = $this->dataViewManager->findOrCreateOrFail([
-            'name'    => sprintf('%s.%s', $name, $nameAttribute),
+            'name'    => $enclosed,
             'type'    => 'component',
             'require' => $name.'.'.$nameAttribute,
             'tag'     => $name,
         ])->getResource();
 
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeAttribute($attribute), 10)]);
-
+        
         $configuration = [
-            'name'    => $nameAttribute,
-            'include' => $name.'.'.$nameAttribute,
-            'require' => $name.'.'.$nameAttribute,
+            'name'    => "~".$name.".".$nameAttribute."~",
+            'include' => "~".$name.'.'.$nameAttribute."~"
         ];
+
 
         foreach ($this->getAllMainViewsByData($name) as $dataView) {
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',
                 'tag'       => $name,
-                'require'   => $configuration['require'],
+                'require'   => $name.'.'.$nameAttribute,
                 'parent_id' => $dataView->id,
             ])->getResource();
 
@@ -63,7 +69,7 @@ trait HasAttributes
     {
         $manager = $this->getManagerByName($name);
 
-        $attribute = $manager->getAttributes()->filter(function ($attribute) use ($nameAttribute) {
+        $attribute = $manager->getAttributes()->first(function ($attribute) use ($nameAttribute) {
             return $attribute->getName() === $nameAttribute;
         });
 
@@ -80,7 +86,7 @@ trait HasAttributes
     {
         $manager = $this->getManagerByName($name);
 
-        $attribute = $manager->getAttributes()->filter(function ($attribute) use ($nameAttribute) {
+        $attribute = $manager->getAttributes()->first(function ($attribute) use ($nameAttribute) {
             return $attribute->getName() === $nameAttribute;
         });
 
@@ -98,7 +104,7 @@ trait HasAttributes
     {
         $manager = $this->getManagerByName($name);
 
-        $attribute = $manager->getAttributes()->filter(function ($attribute) use ($newNameAttribute) {
+        $attribute = $manager->getAttributes()->first(function ($attribute) use ($newNameAttribute) {
             return $attribute->getName() === $newNameAttribute;
         });
 

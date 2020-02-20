@@ -9,6 +9,8 @@ trait HasData
 {
     use HasAttributes;
     use HasRelations;
+    use HasServices;
+    use HasRoutes;
 
     public function getPath(string $path)
     {
@@ -23,14 +25,10 @@ trait HasData
     public function create(ManagerContract $manager)
     {
         $name = $manager->getName();
-
+        
         $generator = new TextGenerator();
 
         $componentFiles = collect(glob($this->getPath('component/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
-        $routesFiles = collect(glob($this->getPath('routes/*')))->mapWithKeys(function ($file) use ($generator) {
             return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
@@ -39,11 +37,11 @@ trait HasData
         });
 
         $this->generate($name, $manager, 'component', $componentFiles);
-        $this->generate($name, $manager, 'routes', $routesFiles);
-        $this->generate($name, $manager, 'service', $serviceFiles);
 
         $this->generateChildren($name, $manager);
 
+        $this->createServices($manager);
+        $this->createRoutes($manager);
         $this->createAttributes($manager);
         $this->createRelations($manager);
     }
