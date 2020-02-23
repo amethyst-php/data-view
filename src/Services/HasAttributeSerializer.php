@@ -55,8 +55,8 @@ trait HasAttributeSerializer
                 // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
-                        $nameComponent
-                    ]
+                        $nameComponent,
+                    ],
                 ],
                 'select' => [
                     'attributes' => [
@@ -80,7 +80,7 @@ trait HasAttributeSerializer
     public function serializeBooleanAttribute(Attributes\BooleanAttribute $attribute): iterable
     {
         $attr = $this->serializeBaseAttribute($attribute);
-        $attr['options']['readable']['label'] = "{{ value ? 1 : 0 }}";
+        $attr['options']['readable']['label'] = '{{ value ? 1 : 0 }}';
 
         return $attr;
     }

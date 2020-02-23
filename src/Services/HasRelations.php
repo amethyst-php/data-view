@@ -28,7 +28,7 @@ trait HasRelations
 
         // Generate a single view-attribute
         $view = $this->dataViewManager->findOrCreateOrFail([
-            'name'    => $this->enclose($name).".".$enclosed,
+            'name'    => $this->enclose($name).'.'.$enclosed,
             'type'    => 'component',
             'require' => $name.'.'.$nameRelation,
             'tag'     => $name,
@@ -65,7 +65,7 @@ trait HasRelations
         $manager = $this->getManagerByName($name);
 
         $relation = app('eloquent.mapper')->retrieveRelationByModel($manager->newEntity(), $nameRelation);
-        
+
         $this->createRelation($manager, $relation);
     }
 
@@ -97,10 +97,10 @@ trait HasRelations
 
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
             $this->dataViewManager->updateOrFail($view, [
-                'name' => $this->renameNameComponent($view->name, $name, $oldNameRelation, $newNameRelation),
-                'tag' => $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, ''),
+                'name'    => $this->renameNameComponent($view->name, $name, $oldNameRelation, $newNameRelation),
+                'tag'     => $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, ''),
                 'require' => $this->renameNameComponent($view->require, $name, $oldNameRelation, $newNameRelation, ''),
-                'config' => $this->renameNameComponent($view->config, $name, $oldNameRelation, $newNameRelation),
+                'config'  => $this->renameNameComponent($view->config, $name, $oldNameRelation, $newNameRelation),
             ]);
         }
     }

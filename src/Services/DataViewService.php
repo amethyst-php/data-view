@@ -49,7 +49,7 @@ class DataViewService
      * Retrieve all main views by data.
      *
      * @param string $name
-     * @param array $resources
+     * @param array  $resources
      *
      * @return Collection
      */
@@ -63,6 +63,7 @@ class DataViewService
 
         return $this->dataViewManager->getRepository()->newQuery()->whereIn('name', $resources)->get();
     }
+
     /**
      * Enclose data and subcomponent in reference variable placeholder.
      *
@@ -92,7 +93,6 @@ class DataViewService
 
     public function renameNameComponent(string $str, string $data, string $oldName, string $newName, string $enclose = '~')
     {
-        
     }
 
     public function generateComponents(DataView $parent = null, string $name, $component, string $path = 'generic')

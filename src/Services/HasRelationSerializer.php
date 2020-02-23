@@ -78,7 +78,7 @@ trait HasRelationSerializer
                 ],
                 'persist' => [
                     'attributes' => [
-                        $nameComponentField
+                        $nameComponentField,
                     ],
                 ],
                 'actions' => [
@@ -124,7 +124,7 @@ trait HasRelationSerializer
                         ]*/
                     ],
                 ],
-                'inject'   => [
+                'inject' => [
                     'attributes' => [
                         $nameComponentField => [
                             'template' => '{{ value.id }}',
@@ -138,15 +138,15 @@ trait HasRelationSerializer
                     'type'  => 'default',
                     'label' => sprintf('{{ values(value, data(resource.%s).getPrimaryAttributes()|mapByKey("name")).join(",") }}', $enclosedRelationKey),
                 ],
-                'include'   => [$nameComponent],
-                'persist'   => [
+                'include' => [$nameComponent],
+                'persist' => [
                     'attributes' => [
-                        $nameComponentField
+                        $nameComponentField,
                     ],
                 ],
                 'condition' => sprintf('{{ hasData(resource.%s) ? 1 : 0 }}', $enclosedRelationKey),
-                'select' => [
-                    'data'  => sprintf("{{ resource.%s }}", $enclosedRelationKey),
+                'select'    => [
+                    'data'  => sprintf('{{ resource.%s }}', $enclosedRelationKey),
                     'query' => sprintf(
                         "concat(%s) ct '{{ __key__ }}'",
                         sprintf('{{ data(resource.%s).getPrimaryAttributes()|mapByKey("name").join(",") }}', $enclosedRelationKey)
@@ -158,7 +158,6 @@ trait HasRelationSerializer
                 ],
             ],
         ];
-
 
         return $params;
     }
@@ -203,7 +202,6 @@ trait HasRelationSerializer
             $fixed[$column] = $scope['value'];
         }
 
-
         $nameComponent = $this->enclose($name, $relation['name']);
 
         $relatedEnclosed = $this->enclose($relatedName);
@@ -229,7 +227,7 @@ trait HasRelationSerializer
                 ],
                 'inject' => [
                     'attributes' => [
-                        $nameComponent
+                        $nameComponent,
                     ],
                 ],
                 'readable' => [

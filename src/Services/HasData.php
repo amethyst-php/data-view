@@ -67,10 +67,10 @@ trait HasData
     {
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
             $this->dataViewManager->updateOrFail($view, [
-                'name' => $this->renameNameData($view->name, $oldName, $newName),
-                'tag' => $this->renameNameData($view->tag, $oldName, $newName, ''),
+                'name'    => $this->renameNameData($view->name, $oldName, $newName),
+                'tag'     => $this->renameNameData($view->tag, $oldName, $newName, ''),
                 'require' => $this->renameNameData($view->require, $oldName, $newName, ''),
-                'config' => $this->renameNameData($view->config, $oldName, $newName),
+                'config'  => $this->renameNameData($view->config, $oldName, $newName),
             ]);
         }
     }
@@ -82,7 +82,7 @@ trait HasData
      */
     public function removeByName(string $name)
     {
-        $this->dataViewManager->getRepository()->newQuery()->where('require', 'LIKE', $name.".%")->orWhere('require', 'LIKE', $name)->delete();
+        $this->dataViewManager->getRepository()->newQuery()->where('require', 'LIKE', $name.'.%')->orWhere('require', 'LIKE', $name)->delete();
     }
 
     public function generateChildrens(ManagerContract $manager)
@@ -92,7 +92,6 @@ trait HasData
         $enclosed = $this->enclose($name);
 
         $dataViews = $this->getAllMainViewsByData($name);
-
 
         foreach ($dataViews as $dataView) {
             if ($dataView->name === sprintf('%s.page.show', $enclosed)) {
@@ -114,7 +113,6 @@ trait HasData
                 $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
             }
 
-
             if ($dataView->name === sprintf('%s.page.index', $enclosed)) {
                 $component = sprintf('%s.resource.index', $enclosed);
 
@@ -132,7 +130,6 @@ trait HasData
                 ])->getResource();
 
                 $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
-
             }
         }
     }
