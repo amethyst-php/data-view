@@ -32,6 +32,7 @@ trait HasRelationSerializer
         $nameComponentField = $this->enclose($name, $attribute->getName());
 
         $relatedName = $relation['related'];
+        $relatedEnclosed = $this->enclose($relatedName);
 
         $params = [
             'name'    => $nameComponent,
@@ -52,35 +53,7 @@ trait HasRelationSerializer
                         ]*/
                     ],
                 ],
-                'readable' => [
-                    'type'  => 'default',
-                    'label' => $attribute
-                        ->getRelationManager()
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($relatedName) {
-                            return '{{ value.~'.$relatedName."$x~ }}";
-                        })->implode(' '),
-                ],
-                'include' => [$attribute->getRelationName()],
-                'select'  => [
-                    'data'  => $data,
-                    'query' => sprintf(
-                        "concat(%s) ct '{{ __key__ }}'",
-                        $attribute
-                            ->getRelationManager()
-                            ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute, $relatedName) {
-                                return '~'.$relatedName.".$x~";
-                            })->implode(',')
-                    ),
-                    'label' => $attribute
-                        ->getRelationManager()
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($attribute, $relatedName) {
-                            return "{{ ~$relatedName.$x~ }}";
-                        })->implode(' - '),
-                ],
-                'persist' => [
+                'inject' => [
                     'attributes' => [
                         $nameComponentField => [
                             'template' => '{{ value.id }}',
@@ -90,8 +63,26 @@ trait HasRelationSerializer
                         ],
                     ],
                 ],
+                'readable' => [
+                    'type'  => 'default',
+                    'label' => sprintf('{{ values(value, data("%s").getPrimaryAttributes()|mapByKey("name")).join(" ") }}', $relatedEnclosed),
+                ],
+                'include' => [$attribute->getRelationName()],
+                'select'  => [
+                    'data'  => $relatedEnclosed,
+                    'query' => sprintf(
+                        "concat(%s) ct '{{ __key__ }}'",
+                        sprintf('{{ data("%s").getPrimaryAttributes()|mapByKey("name").join(",") }}', $relatedEnclosed)
+                    ),
+                    'label' => sprintf('{{ values(value, data("%s").getPrimaryAttributes()|mapByKey("name")).join(" ") }}', $relatedEnclosed),
+                ],
+                'persist' => [
+                    'attributes' => [
+                        $nameComponentField
+                    ],
+                ],
                 'actions' => [
-                    'update' => sprintf('%s-resource-upsert', $data),
+                    'update' => sprintf('%s-resource-upsert', $relatedEnclosed),
                 ],
             ],
         ];
@@ -133,12 +124,7 @@ trait HasRelationSerializer
                         ]*/
                     ],
                 ],
-                'readable' => [
-                    'type'  => 'default',
-                    'label' => sprintf('{{ values(value, data(resource.%s).getPrimaryAttributes()|mapByKey("name")).join(",") }}', $enclosedRelationKey),
-                ],
-                'include'   => [$nameComponent],
-                'persist'   => [
+                'inject'   => [
                     'attributes' => [
                         $nameComponentField => [
                             'template' => '{{ value.id }}',
@@ -146,6 +132,16 @@ trait HasRelationSerializer
                         $nameComponent => [
                             'path' => 'value',
                         ],
+                    ],
+                ],
+                'readable' => [
+                    'type'  => 'default',
+                    'label' => sprintf('{{ values(value, data(resource.%s).getPrimaryAttributes()|mapByKey("name")).join(",") }}', $enclosedRelationKey),
+                ],
+                'include'   => [$nameComponent],
+                'persist'   => [
+                    'attributes' => [
+                        $nameComponentField
                     ],
                 ],
                 'condition' => sprintf('{{ hasData(resource.%s) ? 1 : 0 }}', $enclosedRelationKey),
@@ -210,6 +206,8 @@ trait HasRelationSerializer
 
         $nameComponent = $this->enclose($name, $relation['name']);
 
+        $relatedEnclosed = $this->enclose($relatedName);
+
         $params = [
             'name'    => $nameComponent,
             'extends' => 'attribute-input',
@@ -229,36 +227,24 @@ trait HasRelationSerializer
                         ],
                     ],
                 ],
+                'inject' => [
+                    'attributes' => [
+                        $nameComponent
+                    ],
+                ],
                 'readable' => [
                     'type'  => 'default',
-                    'label' => $relationManager
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($relatedName) {
-                            return "{{ value.~$relatedName.$x~ }}";
-                        })->implode(' '),
+                    'label' => sprintf('{{ values(value, data("%s").getPrimaryAttributes()|mapByKey("name")).join(" ") }}', $relatedEnclosed),
                 ],
                 'select' => [
-                    'data'  => "~$relatedName~",
+                    'data'  => $relatedEnclosed,
                     'query' => sprintf(
                         "concat(%s) ct '{{ __key__ }}'",
-                        $relationManager
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($relatedName) {
-                            return "~$relatedName.$x~";
-                        })->implode(',')
+                        sprintf('{{ data("%s").getPrimaryAttributes()|mapByKey("name").join(",") }}', $relatedEnclosed)
                     ),
-                    'label' => $relationManager
-                        ->getPrimaryAttributeNames()
-                        ->map(function ($x) use ($relatedName) {
-                            return "{{ ~$relatedName.$x~ }}";
-                        })->implode(' - '),
+                    'label' => sprintf('{{ values(value, data("%s").getPrimaryAttributes()|mapByKey("name")).join(" ") }}', $relatedEnclosed),
                 ],
                 'persist' => [
-                    'attributes' => [
-                        $nameComponent => [
-                            'path' => 'value',
-                        ],
-                    ],
                     'data' => [
                         'name'       => app('amethyst')->getNameDataByModel($relation['intermediate']),
                         'scopes'     => $fixed,

@@ -41,6 +41,13 @@ trait HasAttributeSerializer
                         ],
                     ],
                 ],
+                'inject' => [
+                    'attributes' => [
+                        $nameComponent => [
+                            'path' => 'value',
+                        ],
+                    ],
+                ],
                 'readable' => [
                     'type'  => 'default',
                     'label' => '{{ value }}',
@@ -48,10 +55,8 @@ trait HasAttributeSerializer
                 // 'inject' => $attribute->getName(),
                 'persist' => [
                     'attributes' => [
-                        $nameComponent => [
-                            'path' => 'value',
-                        ],
-                    ],
+                        $nameComponent
+                    ]
                 ],
                 'select' => [
                     'attributes' => [
