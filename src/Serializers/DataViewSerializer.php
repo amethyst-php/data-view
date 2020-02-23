@@ -19,14 +19,6 @@ class DataViewSerializer extends Serializer
      */
     public function serialize(EntityContract $entity, Collection $select = null)
     {
-        $bag = parent::serialize($entity, $select);
-
-        $config = Yaml::parse((string) $bag->get('config'));
-
-        $agent = $this->getManager()->getAgent();
-
-        $bag->set('processed', $config);
-
-        return $bag;
+        return parent::serialize($entity, $select);
     }
 }

@@ -61,15 +61,22 @@ trait HasAttributeSerializer
             ],
         ];
 
-        return [$params];
+        return $params;
     }
 
     public function serializeEnumAttribute(Attributes\EnumAttribute $attribute): iterable
     {
-        return collect($this->serializeBaseAttribute($attribute))->map(function ($attr) use ($attribute) {
-            $attr['options']['items'] = $attribute->getOptions();
+        $attr = $this->serializeBaseAttribute($attribute);
+        $attr['options']['items'] = $attribute->getOptions();
 
-            return $attr;
-        })->toArray();
+        return $attr;
+    }
+
+    public function serializeBooleanAttribute(Attributes\BooleanAttribute $attribute): iterable
+    {
+        $attr = $this->serializeBaseAttribute($attribute);
+        $attr['options']['readable']['label'] = "{{ value ? 1 : 0 }}";
+
+        return $attr;
     }
 }

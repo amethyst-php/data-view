@@ -29,7 +29,7 @@ trait HasServices
 
         $view = $this->dataViewManager->findOrCreateOrFail([
             'name'    => $enclosed.'.bookmark',
-            'type'    => 'bookmark',
+            'type'    => 'service',
             'tag'     => $name,
             'require' => $name,
         ])->getResource();

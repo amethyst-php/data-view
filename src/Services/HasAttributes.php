@@ -32,7 +32,7 @@ trait HasAttributes
 
         // Generate a single view-attribute
         $view = $this->dataViewManager->findOrCreateOrFail([
-            'name'    => $enclosed,
+            'name'    => $this->enclose($name).".".$enclosed,
             'type'    => 'component',
             'require' => $name.'.'.$nameAttribute,
             'tag'     => $name,
@@ -41,11 +41,18 @@ trait HasAttributes
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeAttribute($attribute), 10)]);
 
         $configuration = [
-            'name'    => '~'.$name.'.'.$nameAttribute.'~',
-            'include' => '~'.$name.'.'.$nameAttribute.'~',
+            'name'    => $enclosed,
+            'include' => $this->enclose($name).'.'.$enclosed,
         ];
 
-        foreach ($this->getAllMainViewsByData($name) as $dataView) {
+        foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
+
+            if (
+                ($dataView->name === sprintf('%s.resource.upsert', $this->enclose($name)) && $attribute->getFillable()) ||
+                ($dataView->name === sprintf('%s.resource.index', $this->enclose($name)) && !$attribute->getHidden()) ||
+                ($dataView->name === sprintf('%s.resource.show', $this->enclose($name)) && !$attribute->getHidden())
+            ) {
+
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',
@@ -55,6 +62,8 @@ trait HasAttributes
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
+            }
+
         }
     }
 
@@ -107,7 +116,14 @@ trait HasAttributes
             return $attribute->getName() === $newNameAttribute;
         });
 
-        // ...
+        foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
+            $this->dataViewManager->updateOrFail($view, [
+                'name' => $this->renameNameComponent($view->name, $name, $oldNameAttribute, $newNameAttribute),
+                'tag' => $this->renameNameComponent($view->tag, $name, $oldNameAttribute, $newNameAttribute, ''),
+                'require' => $this->renameNameComponent($view->require, $name, $oldNameAttribute, $newNameAttribute, ''),
+                'config' => $this->renameNameComponent($view->config, $name, $oldNameAttribute, $newNameAttribute),
+            ]);
+        }
     }
 
     /**

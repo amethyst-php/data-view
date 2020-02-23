@@ -49,22 +49,20 @@ class DataViewService
      * Retrieve all main views by data.
      *
      * @param string $name
+     * @param array $resources
      *
      * @return Collection
      */
-    public function getAllMainViewsByData(string $name)
+    public function getAllMainViewsByData(string $name, $resources = ['page.index', 'page.show', 'resource.index', 'resource.upsert', 'resource.show'])
     {
         $enclosed = $this->enclose($name);
 
-        return $this->dataViewManager->getRepository()->newQuery()->whereIn('name', [
-            sprintf('%s.page.index', $enclosed),
-            sprintf('%s.page.show', $enclosed),
-            sprintf('%s.resource.index', $enclosed),
-            sprintf('%s.resource.upsert', $enclosed),
-            sprintf('%s.resource.show', $enclosed),
-        ])->get();
-    }
+        $resources = array_map(function ($i) use ($enclosed) {
+            return sprintf("%s.$i", $enclosed);
+        }, $resources);
 
+        return $this->dataViewManager->getRepository()->newQuery()->whereIn('name', $resources)->get();
+    }
     /**
      * Enclose data and subcomponent in reference variable placeholder.
      *
@@ -82,6 +80,19 @@ class DataViewService
         }
 
         return '~'.implode('.', $arr).'~';
+    }
+
+    public function renameNameData(string $str, string $oldName, string $newName, string $enclose = '~')
+    {
+        $str = preg_replace("/$enclose$oldName\.([a-z0-9_\-]*)$enclose/iU", "$enclose$newName.$1$enclose", $str);
+        $str = preg_replace("/$enclose$oldName$enclose/iU", "$enclose$newName$enclose", $str);
+
+        return $str;
+    }
+
+    public function renameNameComponent(string $str, string $data, string $oldName, string $newName, string $enclose = '~')
+    {
+        
     }
 
     public function generateComponents(DataView $parent = null, string $name, $component, string $path = 'generic')

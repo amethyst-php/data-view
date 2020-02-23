@@ -1,9 +1,0 @@
-name: ~{{ component.name }}~
-{% if component.extends %}
-
-extends: ~{{ component.extends }}~
-{% endif %}
-{% if component.include %}
-
-include: ~{{ component.include }}~
-{% endif %}

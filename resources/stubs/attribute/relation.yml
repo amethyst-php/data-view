@@ -1,6 +1,0 @@
-name: {{ component.name }}
-extends: attribute-input
-type: attribute
-options:
-  size: 12
-  include: [{{ component.options.data }}]

@@ -4,6 +4,7 @@ namespace Amethyst\Services;
 
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Template\Generators\TextGenerator;
+use Symfony\Component\Yaml\Yaml;
 
 trait HasData
 {
@@ -38,7 +39,7 @@ trait HasData
 
         $this->generate($name, $manager, 'component', $componentFiles);
 
-        $this->generateChildren($name, $manager);
+        $this->generateChildrens($manager);
 
         $this->createServices($manager);
         $this->createRoutes($manager);
@@ -53,6 +54,7 @@ trait HasData
      */
     public function createByName(string $name)
     {
+        $this->create($this->getManagerByName($name));
     }
 
     /**
@@ -63,7 +65,14 @@ trait HasData
      */
     public function renameByName(string $oldName, string $newName)
     {
-        // ...
+        foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
+            $this->dataViewManager->updateOrFail($view, [
+                'name' => $this->renameNameData($view->name, $oldName, $newName),
+                'tag' => $this->renameNameData($view->tag, $oldName, $newName, ''),
+                'require' => $this->renameNameData($view->require, $oldName, $newName, ''),
+                'config' => $this->renameNameData($view->config, $oldName, $newName),
+            ]);
+        }
     }
 
     /**
@@ -73,29 +82,57 @@ trait HasData
      */
     public function removeByName(string $name)
     {
-        // ...
+        $this->dataViewManager->getRepository()->newQuery()->where('require', 'LIKE', $name.".%")->orWhere('require', 'LIKE', $name)->delete();
     }
 
-    public function generateChildren(string $name, ManagerContract $manager)
+    public function generateChildrens(ManagerContract $manager)
     {
+        $name = $manager->getName();
         $entity = $manager->newEntity();
         $enclosed = $this->enclose($name);
 
         $dataViews = $this->getAllMainViewsByData($name);
 
+
         foreach ($dataViews as $dataView) {
             if ($dataView->name === sprintf('%s.page.show', $enclosed)) {
-                $this->generateComponents($dataView, $name, [
+                $component = sprintf('%s.resource.show', $enclosed);
+
+                $configuration = [
                     'name'    => 'main',
-                    'extends' => sprintf('%s.resource.show', $enclosed),
-                ]);
+                    'extends' => $component,
+                ];
+
+                $view = $this->dataViewManager->findOrCreateOrFail([
+                    'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
+                    'type'      => 'component',
+                    'tag'       => $name,
+                    'require'   => $name,
+                    'parent_id' => $dataView->id,
+                ])->getResource();
+
+                $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
             }
 
-            if ($dataView->name === sprintf('%s.page.index', $name)) {
-                $this->generateComponents($dataView, $name, [
+
+            if ($dataView->name === sprintf('%s.page.index', $enclosed)) {
+                $component = sprintf('%s.resource.index', $enclosed);
+
+                $configuration = [
                     'name'    => 'main',
-                    'extends' => sprintf('%s.resource.index', $enclosed),
-                ]);
+                    'extends' => $component,
+                ];
+
+                $view = $this->dataViewManager->findOrCreateOrFail([
+                    'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
+                    'type'      => 'component',
+                    'tag'       => $name,
+                    'require'   => $name,
+                    'parent_id' => $dataView->id,
+                ])->getResource();
+
+                $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
+
             }
         }
     }

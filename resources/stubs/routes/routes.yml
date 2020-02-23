@@ -1,8 +1,0 @@
-- 
-  path: {{ name }}
-  name: {{ name }}.index
-  component: {{ name }}.page.index
--
-  path: "{{ name }}/:id"
-  name: {{ name }}.show
-  component: {{ name }}.page.show

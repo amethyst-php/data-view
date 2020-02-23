@@ -96,7 +96,7 @@ trait HasRelationSerializer
             ],
         ];
 
-        return [$params];
+        return $params;
     }
 
     public function serializeMorphTo($name, $relation): iterable
@@ -112,75 +112,59 @@ trait HasRelationSerializer
         $nameComponent = $this->enclose($name, $relation['name']);
         $nameComponentField = $this->enclose($name, $attribute->getName());
 
-        foreach ($this->getKeysFromMorphTo($attribute) as $key) {
-            $params = [
-                'name'    => $nameComponent,
-                'extends' => 'attribute-input',
-                'type'    => 'attribute',
-                'options' => [
-                    'name'     => $nameComponent,
-                    'type'     => 'autocomplete',
-                    'required' => (bool) $attribute->getRequired(),
-                    'extract'  => [
-                        'attributes' => [
-                            $nameComponent => [
-                                'path' => $nameComponent,
-                            ],
-                            /*$attribute->getName() => [
-                                'data' => $key,
-                                'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
-                            ]*/
+        $enclosedRelationKey = $this->enclose($name, $attribute->getRelationKey());
+
+        $params = [
+            'name'    => $nameComponent,
+            'extends' => 'attribute-input',
+            'type'    => 'attribute',
+            'options' => [
+                'name'     => $nameComponent,
+                'type'     => 'autocomplete',
+                'required' => (bool) $attribute->getRequired(),
+                'extract'  => [
+                    'attributes' => [
+                        $nameComponent => [
+                            'path' => $nameComponent,
                         ],
-                    ],
-                    'readable' => [
-                        'type'  => 'default',
-                        'label' => $attribute
-                            ->getRelationManagerByKey($key)
-                            ->getPrimaryAttributeNames()
-                            ->map(function ($x) {
-                                return "{{ value.$x }}";
-                            })->implode(' '),
-                    ],
-                    'include'   => [$nameComponent],
-                    'condition' => sprintf('~%s~ === {{ resource.%s }}', $key, $attribute->getRelationKey()),
-                    'persist'   => [
-                        'attributes' => [
-                            $nameComponentField => [
-                                'template' => '{{ value.id }}',
-                            ],
-                            $nameComponent => [
-                                'path' => 'value',
-                            ],
-                        ],
-                    ],
-                    'select' => [
-                        'data'  => $key,
-                        'query' => sprintf(
-                            "concat(%s) ct '{{ __key__ }}'",
-                            $attribute
-                                ->getRelationManagerByKey($key)
-                                ->getPrimaryAttributeNames()
-                                ->map(function ($x) use ($attribute) {
-                                    return "$x";
-                                })->implode(',')
-                            ),
-                        'label' => $attribute
-                            ->getRelationManagerByKey($key)
-                            ->getPrimaryAttributeNames()
-                            ->map(function ($x) use ($attribute) {
-                                return "{{ $x }}";
-                            })->implode(' - '),
-                    ],
-                    'actions' => [
-                        'update' => sprintf('%s-resource-upsert', $key),
+                        /*$attribute->getName() => [
+                            'data' => $key,
+                            'query' => sprintf('id eq {{ resource.%s }}', $attribute->getName())
+                        ]*/
                     ],
                 ],
-            ];
+                'readable' => [
+                    'type'  => 'default',
+                    'label' => sprintf('{{ values(value, data(resource.%s).getPrimaryAttributes()|mapByKey("name")).join(",") }}', $enclosedRelationKey),
+                ],
+                'include'   => [$nameComponent],
+                'persist'   => [
+                    'attributes' => [
+                        $nameComponentField => [
+                            'template' => '{{ value.id }}',
+                        ],
+                        $nameComponent => [
+                            'path' => 'value',
+                        ],
+                    ],
+                ],
+                'condition' => sprintf('{{ hasData(resource.%s) ? 1 : 0 }}', $enclosedRelationKey),
+                'select' => [
+                    'data'  => sprintf("{{ resource.%s }}", $enclosedRelationKey),
+                    'query' => sprintf(
+                        "concat(%s) ct '{{ __key__ }}'",
+                        sprintf('{{ data(resource.%s).getPrimaryAttributes()|mapByKey("name").join(",") }}', $enclosedRelationKey)
+                    ),
+                    'label' => sprintf('{{ values(value, data(resource.%s).getPrimaryAttributes()|mapByKey("name")).join(" ") }}', $enclosedRelationKey),
+                ],
+                'actions' => [
+                    'update' => sprintf('{{ resource.%s }}-resource-upsert', $enclosedRelationKey),
+                ],
+            ],
+        ];
 
-            $return[] = $params;
-        }
 
-        return $return;
+        return $params;
     }
 
     public function getRelationByKeyName(Model $model, string $keyName)
@@ -197,10 +181,9 @@ trait HasRelationSerializer
         })->getOptions();
     }
 
-    public function serializeMorphToMany(array $relation): iterable
+    public function serializeMorphToMany(string $name, array $relation): iterable
     {
         $relationManager = app('amethyst')->findManagerByName($relation['related']);
-        $name = $relation['name'];
 
         $relatedPivotKey = $relation['relatedPivotKey'];
         $foreignPivotKey = $relation['foreignPivotKey'];
@@ -209,6 +192,8 @@ trait HasRelationSerializer
             $foreignPivotKey       => '{{ resource.id }}',
             $relation['morphType'] => $relation['morphClass'],
         ];
+
+        $relatedName = $relation['related'];
 
         foreach ($relation['scope'] as $scope) {
             $column = $scope['column'];
@@ -222,22 +207,25 @@ trait HasRelationSerializer
             $fixed[$column] = $scope['value'];
         }
 
+
+        $nameComponent = $this->enclose($name, $relation['name']);
+
         $params = [
-            'name'    => $name,
+            'name'    => $nameComponent,
             'extends' => 'attribute-input',
             'type'    => 'attribute',
             'options' => [
-                'name'     => $name,
+                'name'     => $nameComponent,
                 'type'     => 'autocomplete',
                 'hide'     => false,
                 'required' => false,
                 'multiple' => true,
                 'default'  => [],
-                'include'  => [$name],
+                'include'  => [$nameComponent],
                 'extract'  => [
                     'attributes' => [
-                        $name => [
-                            'path' => $name,
+                        $nameComponent => [
+                            'path' => $nameComponent,
                         ],
                     ],
                 ],
@@ -245,29 +233,29 @@ trait HasRelationSerializer
                     'type'  => 'default',
                     'label' => $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) {
-                            return "{{ value.$x }}";
+                        ->map(function ($x) use ($relatedName) {
+                            return "{{ value.~$relatedName.$x~ }}";
                         })->implode(' '),
                 ],
                 'select' => [
-                    'data'  => $relation['data'],
+                    'data'  => "~$relatedName~",
                     'query' => sprintf(
                         "concat(%s) ct '{{ __key__ }}'",
                         $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) {
-                            return "$x";
+                        ->map(function ($x) use ($relatedName) {
+                            return "~$relatedName.$x~";
                         })->implode(',')
                     ),
                     'label' => $relationManager
                         ->getPrimaryAttributeNames()
-                        ->map(function ($x) {
-                            return "{{ $x }}";
+                        ->map(function ($x) use ($relatedName) {
+                            return "{{ ~$relatedName.$x~ }}";
                         })->implode(' - '),
                 ],
                 'persist' => [
                     'attributes' => [
-                        $name => [
+                        $nameComponent => [
                             'path' => 'value',
                         ],
                     ],
@@ -282,6 +270,6 @@ trait HasRelationSerializer
             ],
         ];
 
-        return [$params];
+        return $params;
     }
 }

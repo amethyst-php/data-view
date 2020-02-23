@@ -59,7 +59,7 @@ trait HasAttributeSerializer
             ],
         ];
 
-        return [$params];
+        return $params;
     }
 
     public function serializeEnumAttribute(Attributes\EnumAttribute $attribute): iterable

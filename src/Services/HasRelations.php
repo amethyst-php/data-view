@@ -28,7 +28,7 @@ trait HasRelations
 
         // Generate a single view-attribute
         $view = $this->dataViewManager->findOrCreateOrFail([
-            'name'    => sprintf('%s.%s', $name, $nameRelation),
+            'name'    => $this->enclose($name).".".$enclosed,
             'type'    => 'component',
             'require' => $name.'.'.$nameRelation,
             'tag'     => $name,
@@ -37,11 +37,11 @@ trait HasRelations
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeRelation($name, $relation->toArray()), 10)]);
 
         $configuration = [
-            'name'    => '~'.$name.'.'.$nameRelation.'~',
-            'include' => '~'.$name.'.'.$nameRelation.'~',
+            'name'    => $enclosed,
+            'include' => $this->enclose($name).'.'.$enclosed,
         ];
 
-        foreach ($this->getAllMainViewsByData($name) as $dataView) {
+        foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',
@@ -62,6 +62,11 @@ trait HasRelations
      */
     public function createRelationByName(string $name, string $nameRelation)
     {
+        $manager = $this->getManagerByName($name);
+
+        $relation = app('eloquent.mapper')->retrieveRelationByModel($manager->newEntity(), $nameRelation);
+        
+        $this->createRelation($manager, $relation);
     }
 
     /**
@@ -84,7 +89,20 @@ trait HasRelations
      */
     public function renameRelationByName(string $name, string $oldNameRelation, string $newNameRelation)
     {
-        // ...
+        $manager = $this->getManagerByName($name);
+
+        $map = app(MapContract::class);
+
+        $relation = app('eloquent.mapper')->findRelationByKey($map->relations($manager->newEntity()), $nameRelation);
+
+        foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
+            $this->dataViewManager->updateOrFail($view, [
+                'name' => $this->renameNameComponent($view->name, $name, $oldNameRelation, $newNameRelation),
+                'tag' => $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, ''),
+                'require' => $this->renameNameComponent($view->require, $name, $oldNameRelation, $newNameRelation, ''),
+                'config' => $this->renameNameComponent($view->config, $name, $oldNameRelation, $newNameRelation),
+            ]);
+        }
     }
 
     /**
