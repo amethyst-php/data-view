@@ -20,7 +20,6 @@ class DataViewService
     use HasRoutes;
     use HasRelationSerializer;
 
-
     /**
      * @var DataViewManager
      */

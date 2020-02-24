@@ -11,7 +11,6 @@ use Symfony\Component\Yaml\Yaml;
 
 trait HasRelations
 {
-
     /**
      * Create a new relation and attach it to all views.
      *
