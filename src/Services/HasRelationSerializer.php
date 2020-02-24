@@ -227,7 +227,9 @@ trait HasRelationSerializer
                 ],
                 'inject' => [
                     'attributes' => [
-                        $nameComponent,
+                        $nameComponent => [
+                            'path' => 'value',
+                        ],
                     ],
                 ],
                 'readable' => [
