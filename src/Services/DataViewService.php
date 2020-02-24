@@ -13,6 +13,13 @@ use Railken\Template\Generators\TextGenerator;
 class DataViewService
 {
     use HasData;
+    use HasAttributeSerializer;
+    use HasAttributes;
+    use HasRelations;
+    use HasServices;
+    use HasRoutes;
+    use HasRelationSerializer;
+
 
     /**
      * @var DataViewManager

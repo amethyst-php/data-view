@@ -10,7 +10,6 @@ use Symfony\Component\Yaml\Yaml;
 
 trait HasAttributes
 {
-    use HasAttributeSerializer;
 
     /**
      * Create a new attribute.

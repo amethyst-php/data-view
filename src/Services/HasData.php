@@ -8,11 +8,6 @@ use Symfony\Component\Yaml\Yaml;
 
 trait HasData
 {
-    use HasAttributes;
-    use HasRelations;
-    use HasServices;
-    use HasRoutes;
-
     public function getPath(string $path)
     {
         return __DIR__.'/../../resources/stubs/'.$path;
