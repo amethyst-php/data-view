@@ -112,12 +112,17 @@ trait HasAttributes
         });
 
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
-            $this->dataViewManager->updateOrFail($view, [
-                'name'    => $this->renameNameComponent($view->name, $name, $oldNameAttribute, $newNameAttribute),
-                'tag'     => $this->renameNameComponent($view->tag, $name, $oldNameAttribute, $newNameAttribute, ''),
-                'require' => $this->renameNameComponent($view->require, $name, $oldNameAttribute, $newNameAttribute, ''),
-                'config'  => $this->renameNameComponent($view->config, $name, $oldNameAttribute, $newNameAttribute),
-            ]);
+
+            $tag = $this->renameNameComponent($view->tag, $name, $oldNameAttribute, $newNameAttribute, '');
+
+            if (!empty($tag)) {
+                $this->dataViewManager->updateOrFail($view, [
+                    'name'    => $this->renameNameComponent($view->name, $name, $oldNameAttribute, $newNameAttribute),
+                    'tag'     => $tag,
+                    'require' => $this->renameNameComponent($view->require, $name, $oldNameAttribute, $newNameAttribute, ''),
+                    'config'  => $this->renameNameComponent($view->config, $name, $oldNameAttribute, $newNameAttribute),
+                ]);
+            }
         }
     }
 

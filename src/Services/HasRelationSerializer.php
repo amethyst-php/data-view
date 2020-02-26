@@ -4,6 +4,7 @@ namespace Amethyst\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Railken\Lem\Attributes;
+use Amethyst\Core\Attributes\DataNameAttribute;
 
 trait HasRelationSerializer
 {
@@ -206,6 +207,16 @@ trait HasRelationSerializer
 
         $relatedEnclosed = $this->enclose($relatedName);
 
+        $intermediate = app('amethyst')->getNameDataByModel($relation['intermediate']);
+
+        foreach (app('amethyst')->get($intermediate)->getAttributes() as $attribute) {
+            if ($attribute instanceof DataNameAttribute) {
+                if (isset($fixed[$attribute->getName()])) {
+                    $fixed[$attribute->getName()] = $this->enclose($fixed[$attribute->getName()]);
+                }
+            }
+        }
+
         $params = [
             'name'    => $nameComponent,
             'extends' => 'attribute-input',
@@ -246,7 +257,7 @@ trait HasRelationSerializer
                 ],
                 'persist' => [
                     'data' => [
-                        'name'       => app('amethyst')->getNameDataByModel($relation['intermediate']),
+                        'name'       => $intermediate,
                         'scopes'     => $fixed,
                         'attributes' => [
                             $relatedPivotKey => '{{ value.id }}',
