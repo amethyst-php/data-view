@@ -15,8 +15,9 @@ trait HasAttributes
      *
      * @param ManagerContract                       $manager
      * @param \Railken\Lem\Attributes\BaseAttribute $attribute
+     * @param bool $related
      */
-    public function createAttribute(ManagerContract $manager, BaseAttribute $attribute)
+    public function createAttribute(ManagerContract $manager, BaseAttribute $attribute, bool $related = true)
     {
         // Skip MorphTo/BelongsTo
         if ($attribute instanceof BelongsToAttribute) {
@@ -38,10 +39,15 @@ trait HasAttributes
 
         $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeAttribute($attribute), 10)]);
 
+        if (!$related) {
+            return;
+        }
+
         $configuration = [
             'name'    => $enclosed,
             'include' => $this->enclose($name).'.'.$enclosed,
         ];
+
 
         foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
             if (
@@ -67,8 +73,9 @@ trait HasAttributes
      *
      * @param string $name
      * @param string $nameAttribute
+     * @param bool $related
      */
-    public function createAttributeByName(string $name, string $nameAttribute)
+    public function createAttributeByName(string $name, string $nameAttribute, bool $related = true)
     {
         $manager = $this->getManagerByName($name);
 
@@ -76,7 +83,18 @@ trait HasAttributes
             return $attribute->getName() === $nameAttribute;
         });
 
-        $this->createAttribute($manager, $attribute);
+        $this->createAttribute($manager, $attribute, $related);
+    }
+
+    /**
+     * Regenerate an attribute and attach it to all views.
+     *
+     * @param string $name
+     * @param string $nameAttribute
+     */
+    public function regenerateAttributeByName(string $name, string $nameAttribute)
+    {
+        return $this->createAttributeByName($name, $nameAttribute, false);
     }
 
     /**
