@@ -15,7 +15,7 @@ trait HasAttributes
      *
      * @param ManagerContract                       $manager
      * @param \Railken\Lem\Attributes\BaseAttribute $attribute
-     * @param bool $related
+     * @param bool                                  $related
      */
     public function createAttribute(ManagerContract $manager, BaseAttribute $attribute, bool $related = true)
     {
@@ -48,7 +48,6 @@ trait HasAttributes
             'include' => $this->enclose($name).'.'.$enclosed,
         ];
 
-
         foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
             if (
                 ($dataView->name === sprintf('%s.resource.upsert', $this->enclose($name)) && $attribute->getFillable()) ||
@@ -73,7 +72,7 @@ trait HasAttributes
      *
      * @param string $name
      * @param string $nameAttribute
-     * @param bool $related
+     * @param bool   $related
      */
     public function createAttributeByName(string $name, string $nameAttribute, bool $related = true)
     {
