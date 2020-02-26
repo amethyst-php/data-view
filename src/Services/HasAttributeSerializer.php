@@ -32,7 +32,7 @@ trait HasAttributeSerializer
                 // 'fillable'   => (bool) $attribute->getFillable(),
                 'required' => (bool) $attribute->getRequired(),
                 'unique'   => (bool) $attribute->getUnique(),
-                'mutable'   => (bool) $attribute->isMutable(),
+                'mutable'  => (bool) $attribute->isMutable(),
                 'default'  => $attribute->getDefault($attribute->getManager()->newEntity()),
                 // 'descriptor' => $attribute->getDescriptor(),
                 'extract' => [
