@@ -56,12 +56,12 @@ trait HasAttributes
                 ($dataView->name === sprintf('%s.resource.show', $this->enclose($name)) && !$attribute->getHidden())
             ) {
                 $view = $this->dataViewManager->findOrCreateOrFail([
-                'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
-                'type'      => 'component',
-                'tag'       => $name,
-                'require'   => $name.'.'.$nameAttribute,
-                'parent_id' => $dataView->id,
-            ])->getResource();
+                    'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
+                    'type'      => 'component',
+                    'tag'       => $name,
+                    'require'   => $name.'.'.$nameAttribute,
+                    'parent_id' => $dataView->id,
+                ])->getResource();
 
                 $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($configuration)]);
             }
@@ -107,11 +107,9 @@ trait HasAttributes
     {
         $manager = $this->getManagerByName($name);
 
-        $attribute = $manager->getAttributes()->first(function ($attribute) use ($nameAttribute) {
-            return $attribute->getName() === $nameAttribute;
-        });
-
-        // ...
+        $this->dataViewManager->getRepository()->newQuery()->where([
+            'require'   => $name.'.'.$nameAttribute,
+        ])->delete();
     }
 
     /**
