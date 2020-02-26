@@ -112,7 +112,6 @@ trait HasAttributes
         });
 
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
-
             $tag = $this->renameNameComponent($view->tag, $name, $oldNameAttribute, $newNameAttribute, '');
 
             if (!empty($tag)) {

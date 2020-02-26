@@ -2,9 +2,9 @@
 
 namespace Amethyst\Services;
 
+use Amethyst\Core\Attributes\DataNameAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Railken\Lem\Attributes;
-use Amethyst\Core\Attributes\DataNameAttribute;
 
 trait HasRelationSerializer
 {
