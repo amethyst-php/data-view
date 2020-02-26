@@ -4,8 +4,6 @@ namespace Amethyst\Providers;
 
 use Amethyst\Console\Commands\DataViewSeedCommand;
 use Amethyst\Core\Providers\CommonServiceProvider;
-use Amethyst\Models\ModelHasPermission;
-use Amethyst\Observers\DataViewPermissionObserver;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 
@@ -19,7 +17,6 @@ class DataViewServiceProvider extends CommonServiceProvider
         parent::register();
 
         $this->app->register(\Railken\Template\TemplateServiceProvider::class);
-        $this->app->register(\Amethyst\Providers\PermissionServiceProvider::class);
 
         $this->app->singleton('amethyst.data-view', function ($app) {
             return new \Amethyst\Services\DataViewService();
@@ -34,8 +31,6 @@ class DataViewServiceProvider extends CommonServiceProvider
         $this->commands([DataViewSeedCommand::class]);
 
         parent::boot();
-
-        // ModelHasPermission::observe(DataViewPermissionObserver::class);
 
         /*Event::listen(\Railken\EloquentMapper\Events\EloquentMapUpdate::class, function ($event) {
             Artisan::call('amethyst:data-view:seed', [
