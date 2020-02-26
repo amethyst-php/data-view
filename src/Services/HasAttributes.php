@@ -107,7 +107,7 @@ trait HasAttributes
         $manager = $this->getManagerByName($name);
 
         $this->dataViewManager->getRepository()->newQuery()->where([
-            'require'   => $name.'.'.$nameAttribute,
+            'require' => $name.'.'.$nameAttribute,
         ])->delete();
     }
 
