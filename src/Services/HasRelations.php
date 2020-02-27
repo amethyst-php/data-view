@@ -94,12 +94,17 @@ trait HasRelations
         $relation = app('eloquent.mapper')->findRelationByKey($map->relations($manager->newEntity()), $nameRelation);
 
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
-            $this->dataViewManager->updateOrFail($view, [
-                'name'    => $this->renameNameComponent($view->name, $name, $oldNameRelation, $newNameRelation),
-                'tag'     => $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, ''),
-                'require' => $this->renameNameComponent($view->require, $name, $oldNameRelation, $newNameRelation, ''),
-                'config'  => $this->renameNameComponent($view->config, $name, $oldNameRelation, $newNameRelation),
-            ]);
+
+            $tag = $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, '');
+
+            if (!empty($tag)) {
+                $this->dataViewManager->updateOrFail($view, [
+                    'name'    => $this->renameNameComponent($view->name, $name, $oldNameRelation, $newNameRelation),
+                    'tag'     => $tag,
+                    'require' => $this->renameNameComponent($view->require, $name, $oldNameRelation, $newNameRelation, ''),
+                    'config'  => $this->renameNameComponent($view->config, $name, $oldNameRelation, $newNameRelation),
+                ]);
+            }
         }
     }
 
