@@ -99,6 +99,9 @@ class DataViewService
 
     public function renameNameComponent(string $str, string $data, string $oldName, string $newName, string $enclose = '~')
     {
+        $str = preg_replace("/$enclose$data\.$oldName/iU", "$enclose$data.$newName", $str);
+
+        return $str;
     }
 
     public function generateComponents(DataView $parent = null, string $name, $component, string $path = 'generic')
