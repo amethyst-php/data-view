@@ -20,15 +20,14 @@ trait HasPages
         $api = config('amethyst.api.http.data.router.prefix');
 
         $configuration = [
-            'label' => $enclosed,
+            'label'   => $enclosed,
             'options' => [
                 'data' => $enclosed,
-                'api' => $api.'/'.$enclosed
-            ]
+                'api'  => $api.'/'.$enclosed,
+            ],
         ];
 
         foreach (['index', 'show'] as $page) {
-
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'    => $this->enclose($name).'.page.'.$page,
                 'type'    => 'component',

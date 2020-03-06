@@ -3,8 +3,6 @@
 namespace Amethyst\Services;
 
 use Amethyst\Core\Attributes\DataNameAttribute;
-use Illuminate\Database\Eloquent\Model;
-use Railken\Lem\Attributes;
 
 trait HasTabSerializer
 {
@@ -61,7 +59,7 @@ trait HasTabSerializer
 
         $inversed = app('eloquent.mapper')->getInversedRelation($name, $relation['related'], $relation['name']);
 
-        $query = $inversed 
+        $query = $inversed
             ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
             : sprintf('id in ({{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
 
@@ -69,13 +67,13 @@ trait HasTabSerializer
 
         $params = [
             'name'    => $nameComponent,
-            'extends' => $relatedEnclosed.".data.iterator.table",
+            'extends' => $relatedEnclosed.'.data.iterator.table',
             'options' => [
-                'query' => $query,
+                'query'   => $query,
                 'persist' => [
                     'data' => [
                         'name'       => $intermediate,
-                        'attributes' => $fixed
+                        'attributes' => $fixed,
                     ],
                 ],
             ],

@@ -52,14 +52,14 @@ trait HasRelations
         }
 
         // BelongsTo/MorphTo
-    
+
         if ($relation->type === 'MorphToMany') {
             $view = $this->dataViewManager->findOrCreateOrFail([
-                'name'    => $this->enclose($name).'.page.show.'.$enclosed,
-                'type'    => 'component',
-                'require' => $name.'.'.$nameRelation,
-                'tag'     => $name,
-                'parent_id' => $this->dataViewManager->getRepository()->findOneBy(['name' => $this->enclose($name).'.page.show'])->id
+                'name'      => $this->enclose($name).'.page.show.'.$enclosed,
+                'type'      => 'component',
+                'require'   => $name.'.'.$nameRelation,
+                'tag'       => $name,
+                'parent_id' => $this->dataViewManager->getRepository()->findOneBy(['name' => $this->enclose($name).'.page.show'])->id,
             ])->getResource();
 
             $this->dataViewManager->updateOrFail($view, ['config' => Yaml::dump($this->serializeTab($name, $relation->toArray()), 10)]);
@@ -108,7 +108,6 @@ trait HasRelations
         $relation = app('eloquent.mapper')->findRelationByKey($map->relations($manager->newEntity()), $nameRelation);
 
         foreach ($this->dataViewManager->getRepository()->findAll() as $view) {
-
             $tag = $this->renameNameComponent($view->tag, $name, $oldNameRelation, $newNameRelation, '');
 
             if (!empty($tag)) {
