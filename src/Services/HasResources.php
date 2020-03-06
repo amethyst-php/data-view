@@ -45,36 +45,42 @@ trait HasResources
 
                 $this->dataViewManager->findOrCreateOrFail([
                     'name'    => $this->enclose($name).".data.iterator.table.create",
-                    'type'    => 'component-action',
+                    'type'    => 'component',
                     'tag'     => $name,
                     'require' => $name,
                     'config' => Yaml::dump([
+                        'label' => 'upsert',
                         'extends' => "{$enclosed}-resource-upsert",
-                        'type' => 'global'
+                        'type' => 'action',
+                        'scope' => 'global'
                     ]),
                     'parent_id' => $view->id
                 ])->getResource();
 
                 $this->dataViewManager->findOrCreateOrFail([
                     'name'    => $this->enclose($name).".data.iterator.table.edit",
-                    'type'    => 'component-action',
+                    'type'    => 'component',
                     'tag'     => $name,
                     'require' => $name,
                     'config' => Yaml::dump([
+                        'label' => 'upsert',
                         'extends' => "{$enclosed}-resource-upsert",
-                        'type' => 'resource'
+                        'type' => 'action',
+                        'scope' => 'resource'
                     ]),
                     'parent_id' => $view->id
                 ])->getResource();
 
                 $this->dataViewManager->findOrCreateOrFail([
                     'name'    => $this->enclose($name).".data.iterator.table.delete",
-                    'type'    => 'component-action',
+                    'type'    => 'component',
                     'tag'     => $name,
                     'require' => $name,
                     'config' => Yaml::dump([
+                        'label' => 'delete',
                         'extends' => "{$enclosed}-resource-delete",
-                        'type' => 'resource'
+                        'type' => 'action',
+                        'scope' => 'resource'
                     ]),
                     'parent_id' => $view->id
                 ])->getResource();
@@ -83,24 +89,28 @@ trait HasResources
             if ($resource === 'resource-show') {
                 $this->dataViewManager->findOrCreateOrFail([
                     'name'    => $this->enclose($name).".resource.show.edit",
-                    'type'    => 'component-action',
+                    'type'    => 'component',
                     'tag'     => $name,
                     'require' => $name,
                     'config' => Yaml::dump([
+                        'label' => 'upsert',
                         'extends' => "{$enclosed}-resource-upsert",
-                        'type' => 'resource'
+                        'type' => 'action',
+                        'scope' => 'resource'
                     ]),
                     'parent_id' => $view->id
                 ])->getResource();
 
                 $this->dataViewManager->findOrCreateOrFail([
                     'name'    => $this->enclose($name).".resource.show.delete",
-                    'type'    => 'component-action',
+                    'type'    => 'component',
                     'tag'     => $name,
                     'require' => $name,
                     'config' => Yaml::dump([
+                        'label' => 'delete',
                         'extends' => "{$enclosed}-resource-delete",
-                        'type' => 'resource'
+                        'type' => 'action',
+                        'scope' => 'resource'
                     ]),
                     'parent_id' => $view->id
                 ])->getResource();
