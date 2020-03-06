@@ -28,14 +28,9 @@ trait HasData
             return [$file => $generator->generateViewFile(file_get_contents($file))];
         });
 
-        $serviceFiles = collect(glob($this->getPath('service/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
         $this->generate($name, $manager, 'component', $componentFiles);
 
         $this->generateChildrens($manager);
-
         $this->createServices($manager);
         $this->createRoutes($manager);
         $this->createAttributes($manager);
