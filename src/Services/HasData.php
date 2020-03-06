@@ -24,12 +24,8 @@ trait HasData
 
         $generator = new TextGenerator();
 
-        $componentFiles = collect(glob($this->getPath('component/*')))->mapWithKeys(function ($file) use ($generator) {
-            return [$file => $generator->generateViewFile(file_get_contents($file))];
-        });
-
-        $this->generate($name, $manager, 'component', $componentFiles);
-
+        $this->createPages($manager);
+        $this->createResources($manager);
         $this->generateChildrens($manager);
         $this->createServices($manager);
         $this->createRoutes($manager);
@@ -104,7 +100,7 @@ trait HasData
             }
 
             if ($dataView->name === sprintf('%s.page.index', $enclosed)) {
-                $component = sprintf('%s.resource.index', $enclosed);
+                $component = sprintf('%s.data.iterator.table', $enclosed);
 
                 $configuration = [
                     'name'    => 'main',

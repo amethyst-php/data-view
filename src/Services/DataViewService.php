@@ -13,6 +13,8 @@ use Railken\Template\Generators\TextGenerator;
 class DataViewService
 {
     use HasData;
+    use HasPages;
+    use HasResources;
     use HasTabSerializer;
     use HasAttributeSerializer;
     use HasAttributes;
@@ -60,7 +62,7 @@ class DataViewService
      *
      * @return Collection
      */
-    public function getAllMainViewsByData(string $name, $resources = ['page.index', 'page.show', 'resource.index', 'resource.upsert', 'resource.show'])
+    public function getAllMainViewsByData(string $name, $resources = ['page.index', 'page.show', 'data.iterator.table', 'resource.upsert', 'resource.show'])
     {
         $enclosed = $this->enclose($name);
 

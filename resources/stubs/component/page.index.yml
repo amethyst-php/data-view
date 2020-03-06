@@ -1,6 +1,0 @@
-label: {{ name }}
-extends: page-index
-icon: /assets/amethyst/{{ name }}-icon.svg
-options:
-  data: {{ name }}
-  api: {{ api }}/{{ name }}

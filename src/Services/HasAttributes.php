@@ -48,10 +48,10 @@ trait HasAttributes
             'include' => $this->enclose($name).'.'.$enclosed,
         ];
 
-        foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
+        foreach ($this->getAllMainViewsByData($name, ['data.iterator.table', 'resource.upsert', 'resource.show']) as $dataView) {
             if (
                 ($dataView->name === sprintf('%s.resource.upsert', $this->enclose($name)) && $attribute->getFillable()) ||
-                ($dataView->name === sprintf('%s.resource.index', $this->enclose($name)) && !$attribute->getHidden()) ||
+                ($dataView->name === sprintf('%s.data.iterator.table', $this->enclose($name)) && !$attribute->getHidden()) ||
                 ($dataView->name === sprintf('%s.resource.show', $this->enclose($name)) && !$attribute->getHidden())
             ) {
                 $view = $this->dataViewManager->findOrCreateOrFail([

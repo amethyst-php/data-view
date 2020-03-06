@@ -39,7 +39,7 @@ trait HasRelations
             'include' => $this->enclose($name).'.'.$enclosed,
         ];
 
-        foreach ($this->getAllMainViewsByData($name, ['resource.index', 'resource.upsert', 'resource.show']) as $dataView) {
+        foreach ($this->getAllMainViewsByData($name, ['data.iterator.table', 'resource.upsert', 'resource.show']) as $dataView) {
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => sprintf('%s.%s', $dataView->name, $enclosed),
                 'type'      => 'component',

@@ -69,7 +69,7 @@ trait HasTabSerializer
 
         $params = [
             'name'    => $nameComponent,
-            'extends' => $relatedEnclosed.".resource.index",
+            'extends' => $relatedEnclosed.".data.iterator.table",
             'options' => [
                 'query' => $query,
                 'persist' => [

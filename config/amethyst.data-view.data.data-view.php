@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'table'      => 'amethyst_data_views',
+    'table'      => 'data_views',
     'comment'    => 'DataView',
     'model'      => Amethyst\Models\DataView::class,
     'schema'     => Amethyst\Schemas\DataViewSchema::class,
