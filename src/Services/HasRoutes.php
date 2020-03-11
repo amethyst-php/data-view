@@ -23,11 +23,13 @@ trait HasRoutes
                 'path'      => $enclosed,
                 'name'      => $enclosed.'.index',
                 'component' => $enclosed.'.page.index',
+                'container' => 'app'
             ],
             [
                 'path'      => $enclosed.'/:id',
                 'name'      => $enclosed.'.show',
                 'component' => $enclosed.'.page.show',
+                'container' => 'app'
             ],
         ];
 
