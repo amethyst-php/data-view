@@ -68,7 +68,7 @@ trait HasData
      */
     public function removeByName(string $name)
     {
-        $this->dataViewManager->getRepository()->newQuery()->where('require', 'LIKE', $name.'.%')->orWhere('require', 'LIKE', $name)->delete();
+        $query = $this->dataViewManager->getRepository()->newQuery()->where('require', 'LIKE', $name.'.%')->orWhere('require', 'LIKE', $name)->get()->each->delete();
     }
 
     public function generateChildrens(ManagerContract $manager)

@@ -31,8 +31,7 @@ class DataViewSchema extends Schema
                 ->setRelationName('parent')
                 ->setRelationManager(DataViewManager::class),
             Attributes\CreatedAtAttribute::make(),
-            Attributes\UpdatedAtAttribute::make(),
-            Attributes\DeletedAtAttribute::make(),
+            Attributes\UpdatedAtAttribute::make()
         ];
     }
 }
