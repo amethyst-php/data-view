@@ -21,10 +21,10 @@ trait HasResources
 
         $configuration = [
             'label'   => $enclosed,
-            'icon'    => "/assets/amethyst/{$enclosed}-icon.svg",
+            'icon'    => $this->retrieveFile($name),
             'options' => [
                 'data' => $enclosed,
-                'api'  => $api.'/'.$enclosed,
+                'api'  => $api.'/'.$enclosed
             ],
         ];
 

@@ -22,10 +22,11 @@ trait HasRelationSerializer
     public function serializeBelongsTo($name, $relation): iterable
     {
         $manager = app('amethyst')->get($name);
-
+        
         $attribute = $manager->getAttributes()->first(function ($attribute) use ($relation) {
             return $attribute->getName() === $relation['localKey'];
         });
+
 
         $data = $attribute->getManager()->newEntity()->getMorphClass();
 

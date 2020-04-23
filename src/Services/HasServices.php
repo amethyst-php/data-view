@@ -20,7 +20,7 @@ trait HasServices
 
         $configuration = [
             'label'   => $enclosed,
-            'icon'    => '/assets/amethyst/'.$enclosed.'-icon.svg',
+            'icon'    => $this->retrieveFile($name),
             'type'    => 'bookmark',
             'options' => [
               'url' => '/'.$enclosed,

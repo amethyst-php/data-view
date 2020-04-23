@@ -6,6 +6,7 @@
     "require": {
         "php": ">=7.2",
         "amethyst/core": "0.2.*",
+        "amethyst/file": "0.2.*",
         "railken/template": "1.0.*"
     },
     "require-dev": {

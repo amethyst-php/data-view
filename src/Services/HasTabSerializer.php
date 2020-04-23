@@ -59,9 +59,10 @@ trait HasTabSerializer
 
         $inversed = app('eloquent.mapper')->getInversedRelation($name, $relation['related'], $relation['name']);
 
+
         $query = $inversed
             ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
-            : sprintf('id in ({{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
+            : sprintf('id in (0, {{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
 
         $fixed[$relatedPivotKey] = '{{ resource.id }}';
 
@@ -69,12 +70,65 @@ trait HasTabSerializer
             'name'    => $nameComponent,
             'extends' => $relatedEnclosed.'.data.iterator.table',
             'options' => [
+                'containerInclude' => [$nameComponent],
                 'query'   => $query,
                 'persist' => [
                     'data' => [
                         'name'       => $intermediate,
                         'attributes' => $fixed,
                     ],
+                ],
+            ],
+        ];
+
+        return $params;
+    }
+
+    public function serializeTabMorphMany(string $name, array $relation): iterable
+    {
+        $relationManager = app('amethyst')->findManagerByName($relation['related']);
+
+        $foreignKey = str_replace("_id", "", $relation['foreignKey']);
+
+        $fixed = [
+            $foreignKey       => [
+                'path' => 'containerResource'
+            ],
+            $relation['morphType'] => $relation['morphClass'],
+        ];
+
+        $relatedName = $relation['related'];
+
+        foreach ($relation['scope'] as $scope) {
+            $column = $scope['column'];
+            $columns = explode('.', $column);
+            if ((count($columns) > 1) && $columns[0] === $relation['table']) {
+                $columns = [$columns[1]];
+            }
+
+            $column = implode('.', $columns);
+
+            $fixed[$column] = $scope['value'];
+        }
+
+        $nameComponent = $this->enclose($name, $relation['name']);
+
+        $relatedEnclosed = $this->enclose($relatedName);
+
+        $inversed = app('eloquent.mapper')->getInversedRelation($name, $relation['related'], $relation['name']);
+
+        $query = $inversed
+            ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
+            : sprintf('id in (0, {{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
+
+        $params = [
+            'name'    => $nameComponent,
+            'extends' => $relatedEnclosed.'.data.iterator.table',
+            'options' => [
+                'containerInclude' => [$nameComponent],
+                'query' => $query,
+                'fixed' => [
+                    'attributes' => $fixed,
                 ],
             ],
         ];
