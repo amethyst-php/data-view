@@ -136,12 +136,10 @@ class DataViewService
         $inflector = new Inflector();
         $api = config('amethyst.api.http.data.router.prefix');
 
-
-
         foreach ($files as $key => $filename) {
             $configuration = $this->generator->render($filename, [
                 'name' => $this->enclose($name),
-                'api'  => $api
+                'api'  => $api,
             ]);
 
             $fullname = $this->enclose($name).'.'.basename($key, '.yml');

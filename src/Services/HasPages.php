@@ -23,7 +23,7 @@ trait HasPages
             'label'   => $enclosed,
             'options' => [
                 'data' => $enclosed,
-                'api'  => $api.'/'.$enclosed
+                'api'  => $api.'/'.$enclosed,
             ],
         ];
 

@@ -59,7 +59,6 @@ trait HasTabSerializer
 
         $inversed = app('eloquent.mapper')->getInversedRelation($name, $relation['related'], $relation['name']);
 
-
         $query = $inversed
             ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
             : sprintf('id in (0, {{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
@@ -71,8 +70,8 @@ trait HasTabSerializer
             'extends' => $relatedEnclosed.'.data.iterator.table',
             'options' => [
                 'containerInclude' => [$nameComponent],
-                'query'   => $query,
-                'persist' => [
+                'query'            => $query,
+                'persist'          => [
                     'data' => [
                         'name'       => $intermediate,
                         'attributes' => $fixed,
@@ -88,11 +87,11 @@ trait HasTabSerializer
     {
         $relationManager = app('amethyst')->findManagerByName($relation['related']);
 
-        $foreignKey = str_replace("_id", "", $relation['foreignKey']);
+        $foreignKey = str_replace('_id', '', $relation['foreignKey']);
 
         $fixed = [
-            $foreignKey       => [
-                'path' => 'containerResource'
+            $foreignKey => [
+                'path' => 'containerResource',
             ],
             $relation['morphType'] => $relation['morphClass'],
         ];
@@ -126,8 +125,8 @@ trait HasTabSerializer
             'extends' => $relatedEnclosed.'.data.iterator.table',
             'options' => [
                 'containerInclude' => [$nameComponent],
-                'query' => $query,
-                'fixed' => [
+                'query'            => $query,
+                'fixed'            => [
                     'attributes' => $fixed,
                 ],
             ],

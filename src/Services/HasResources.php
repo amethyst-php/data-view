@@ -24,7 +24,7 @@ trait HasResources
             'icon'    => $this->retrieveFile($name),
             'options' => [
                 'data' => $enclosed,
-                'api'  => $api.'/'.$enclosed
+                'api'  => $api.'/'.$enclosed,
             ],
         ];
 

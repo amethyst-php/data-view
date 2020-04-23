@@ -2,7 +2,6 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\DataSchema\Manager;
 use Railken\Lem\Attributes\BaseAttribute;
 use Railken\Lem\Attributes\BelongsToAttribute;
 use Railken\Lem\Contracts\ManagerContract;

@@ -2,10 +2,6 @@
 
 namespace Amethyst\Services;
 
-use Railken\Lem\Contracts\ManagerContract;
-use Railken\Template\Generators\TextGenerator;
-use Symfony\Component\Yaml\Yaml;
-
 trait RetrieveFile
 {
     public function retrieveFile(string $name)
@@ -13,16 +9,16 @@ trait RetrieveFile
         $filename = storage_path("assets/amethyst/$name-icon.svg");
 
         if (!file_exists($filename)) {
-            $filename = storage_path("assets/amethyst/data-view-icon.svg");
+            $filename = storage_path('assets/amethyst/data-view-icon.svg');
         }
 
         if (!file_exists($filename)) {
-            throw new \Exception("No icons found. Please publish assets using `php artisan vendor:publish --tag=assets`");
+            throw new \Exception('No icons found. Please publish assets using `php artisan vendor:publish --tag=assets`');
         }
 
         $result = app('amethyst')->get('file')->createOrFail([
-            "name" => "data-view.icon.".$name.".svg",
-            "public" => 1
+            'name'   => 'data-view.icon.'.$name.'.svg',
+            'public' => 1,
         ]);
 
         $resource = $result->getResource();
