@@ -4,8 +4,6 @@ namespace Amethyst\Providers;
 
 use Amethyst\Common\CommonServiceProvider;
 use Amethyst\Console\Commands\DataViewSeedCommand;
-use Amethyst\Models\ModelHasPermission;
-use Amethyst\Observers\DataViewPermissionObserver;
 
 class DataViewServiceProvider extends CommonServiceProvider
 {
@@ -28,7 +26,5 @@ class DataViewServiceProvider extends CommonServiceProvider
         $this->commands([DataViewSeedCommand::class]);
 
         parent::boot();
-
-        ModelHasPermission::observe(DataViewPermissionObserver::class);
     }
 }
