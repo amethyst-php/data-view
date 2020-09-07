@@ -78,6 +78,25 @@ trait HasAttributeSerializer
         return $attr;
     }
 
+    public function serializeDateTimeAttribute(Attributes\DateTimeAttribute $attribute): iterable
+    {
+        $attr = $this->serializeBaseAttribute($attribute);
+        $attr['options']['readable']['label'] = '{{ date(value).format("D MMM YYYY, HH:mm:ss") }}';
+
+
+        return $attr;
+    }
+
+    public function serializeCreatedAtAttribute(Attributes\DateTimeAttribute $attribute): iterable
+    {
+        return $this->serializeDateTimeAttribute($attribute);
+    }
+
+    public function serializeUpdatedAtAttribute(Attributes\DateTimeAttribute $attribute): iterable
+    {
+        return $this->serializeDateTimeAttribute($attribute);
+    }
+
     public function serializeBooleanAttribute(Attributes\BooleanAttribute $attribute): iterable
     {
         $attr = $this->serializeBaseAttribute($attribute);
