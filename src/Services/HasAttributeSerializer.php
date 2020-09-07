@@ -83,7 +83,6 @@ trait HasAttributeSerializer
         $attr = $this->serializeBaseAttribute($attribute);
         $attr['options']['readable']['label'] = '{{ date(value).format("D MMM YYYY, HH:mm:ss") }}';
 
-
         return $attr;
     }
 
