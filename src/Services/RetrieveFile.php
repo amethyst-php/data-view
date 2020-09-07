@@ -4,9 +4,15 @@ namespace Amethyst\Services;
 
 trait RetrieveFile
 {
+    public static $cache = [];
+
     public function retrieveFile(string $name)
     {
         $filename = storage_path("assets/amethyst/$name-icon.svg");
+
+        if (isset(self::$cache[$filename])) {
+            return self::$cache[$filename];
+        }
 
         if (!file_exists($filename)) {
             $filename = storage_path('assets/amethyst/data-view-icon.svg');
@@ -26,6 +32,8 @@ trait RetrieveFile
             ->addMedia($filename)
             ->preservingOriginal()
             ->toMediaCollection('data-view');
+
+        self::$cache[$filename] = $resource->getFullUrl();
 
         return $resource->getFullUrl();
     }
