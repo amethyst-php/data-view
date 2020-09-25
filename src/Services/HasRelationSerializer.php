@@ -27,6 +27,15 @@ trait HasRelationSerializer
             return $attribute->getName() === $relation['localKey'];
         });
 
+        if (!$attribute) {
+            throw new \Exception(sprintf(
+                "Cannot find the attribute BelongsTo of the relation %s:%s, searching with localKey %s", 
+                $name, 
+                $relation['name'],
+                $relation['localKey']
+            ));
+        }
+
         $data = $attribute->getManager()->newEntity()->getMorphClass();
 
         $nameComponent = $this->enclose($name, $relation['name']);
