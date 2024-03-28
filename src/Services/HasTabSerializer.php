@@ -11,7 +11,11 @@ trait HasTabSerializer
         $method = sprintf('serializeTab%s', $relation['type']);
 
         if (method_exists($this, $method)) {
-            return $this->$method($name, $relation);
+            try {
+                return $this->$method($name, $relation);
+            } catch (\Amethyst\Core\Exceptions\DataNotFoundException $e) {
+                return [];
+            }
         }
 
         return [];

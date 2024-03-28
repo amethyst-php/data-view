@@ -2,7 +2,7 @@
 
 namespace Amethyst\Tests;
 
-abstract class BaseTest extends \Orchestra\Testbench\TestCase
+abstract class BaseTestCase extends \Orchestra\Testbench\TestCase
 {
     /**
      * Setup the test environment.
@@ -11,7 +11,13 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
+        $this->artisan('vendor:publish', [
+            '--provider' => 'Spatie\MediaLibrary\MediaLibraryServiceProvider',
+            '--force'    => true,
+        ]);
         $this->artisan('migrate:fresh');
+        $this->artisan('vendor:publish --tag=assets');
+        app('eloquent.mapper')->boot();
     }
 
     protected function getPackageProviders($app)

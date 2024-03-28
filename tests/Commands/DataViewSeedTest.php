@@ -2,9 +2,9 @@
 
 namespace Amethyst\Tests\Commands;
 
-use Amethyst\Tests\BaseTest;
+use Amethyst\Tests\BaseTestCase;
 
-class DataViewSeedTest extends BaseTest
+class DataViewSeedTest extends BaseTestCase
 {
     public function testSeed()
     {

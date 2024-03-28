@@ -20,6 +20,12 @@ class DataViewSchema extends Schema
             Attributes\TextAttribute::make('name')
                 ->setRequired(true)
                 ->setUnique(true),
+            Attributes\TextAttribute::make('slug')
+                ->setRequired(true)
+                ->setUnique(true)
+                ->setDefault(function ($i) {
+                    return microtime();
+                }),
             Attributes\TextAttribute::make('type')
                 ->setRequired(true),
             Attributes\TextAttribute::make('tag'),

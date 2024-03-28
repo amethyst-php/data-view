@@ -4,10 +4,10 @@ namespace Amethyst\Tests\Managers;
 
 use Amethyst\Fakers\DataViewFaker;
 use Amethyst\Managers\DataViewManager;
-use Amethyst\Tests\BaseTest;
+use Amethyst\Tests\BaseTestCase;
 use Railken\Lem\Support\Testing\TestableBaseTrait;
 
-class DataViewTest extends BaseTest
+class DataViewTest extends BaseTestCase
 {
     use TestableBaseTrait;
 

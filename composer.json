@@ -4,15 +4,14 @@
     "keywords": ["laravel", "amethyst", "amethyst-data-view", "data-view"],
     "license": "MIT",
     "require": {
-        "php": ">=7.2",
-        "amethyst/core": "0.2.*",
-        "amethyst/file": "0.2.*",
-        "railken/template": "1.0.*"
+        "php": ">=8.2",
+        "amethyst/core": "0.3.*",
+        "amethyst/file": "0.3.*",
+        "railken/template": "1.1.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
         "orchestra/testbench": "*",
-        "amethyst/foo": "0.2.*"
+        "amethyst/foo": "0.3.*"
     },
     "autoload": {
         "psr-4" : {

@@ -15,6 +15,7 @@ class CreateDataViewsTable extends Migration
         Schema::create(Config::get('amethyst.data-view.data.data-view.table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->index();
+            $table->string('slug')->index();
             $table->string('type');
             $table->string('tag')->nullable();
             $table->string('require')->nullable();
