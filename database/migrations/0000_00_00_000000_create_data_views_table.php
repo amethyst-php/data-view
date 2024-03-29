@@ -23,8 +23,7 @@ class CreateDataViewsTable extends Migration
             $table->string('permission')->nullable();
             $table->longtext('config')->nullable();
             $table->boolean('enabled')->default(1);
-            $table->bigInteger('parent_id')->unsigned()->nullable();
-            $table->foreign('parent_id')->references('id')->on(Config::get('amethyst.data-view.data.data-view.table'))->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->on(Config::get('amethyst.data-view.data.data-view.table'))->onDelete('cascade');
             $table->timestamps();
         });
     }
