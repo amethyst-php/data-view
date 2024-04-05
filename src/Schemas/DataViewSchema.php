@@ -24,7 +24,7 @@ class DataViewSchema extends Schema
                 ->setRequired(true)
                 ->setUnique(true)
                 ->setDefault(function ($i) {
-                    return microtime();
+                    return sha1(rand() * rand());
                 }),
             Attributes\TextAttribute::make('type')
                 ->setRequired(true),

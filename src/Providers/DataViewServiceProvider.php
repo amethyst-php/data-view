@@ -34,9 +34,14 @@ class DataViewServiceProvider extends CommonServiceProvider
         parent::boot();
 
         Event::listen(\Railken\EloquentMapper\Events\EloquentMapUpdate::class, function ($event) {
-            Artisan::call('amethyst:data-view:seed', [
-                'data' => $event->model,
-            ]);
+
+            $data = app('amethyst')->get($event->model);
+
+            app('amethyst.data-view')->create($data);
+
+            event(new \Amethyst\Events\DataViewDataGenerated($event->model));
+            event(new \Amethyst\Events\DataViewOperationCompleted());
+
             \Spatie\ResponseCache\Facades\ResponseCache::clear();
         });
     }
