@@ -122,7 +122,58 @@ trait HasTabSerializer
 
         $query = $inversed
             ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
-            : sprintf('id in (0, {{ containerResource.%s|mapByKey("id").join(",") }})', $nameComponent);
+            : sprintf('%s eq {{ containerResource.id }}', $relation['foreignKey']);
+
+        $params = [
+            'name'    => $nameComponent,
+            'extends' => $relatedEnclosed.'.data.iterator.table',
+            'options' => [
+                'containerInclude' => [$nameComponent],
+                'query'            => $query,
+                'fixed'            => [
+                    'attributes' => $fixed,
+                ],
+            ],
+        ];
+
+        return $params;
+    }
+
+    public function serializeTabHasMany(string $name, array $relation): iterable
+    {
+        $relationManager = app('amethyst')->findManagerByName($relation['related']);
+
+        $foreignKey = str_replace('_id', '', $relation['foreignKey']);
+
+        $fixed = [
+            $foreignKey => [
+                'path' => 'containerResource',
+            ],
+        ];
+
+        $relatedName = $relation['related'];
+
+        foreach ($relation['scope'] as $scope) {
+            $column = $scope['column'];
+            $columns = explode('.', $column);
+            if ((count($columns) > 1) && $columns[0] === $relation['table']) {
+                $columns = [$columns[1]];
+            }
+
+            $column = implode('.', $columns);
+
+            $fixed[$column] = $scope['value'];
+        }
+
+        $nameComponent = $this->enclose($name, $relation['name']);
+
+        $relatedEnclosed = $this->enclose($relatedName);
+
+        $inversed = app('eloquent.mapper')->getInversedRelation($name, $relation['related'], $relation['name']);
+
+        $query = $inversed
+            ? sprintf('%s.id eq {{ containerResource.id }}', $inversed)
+            : sprintf('%s eq {{ containerResource.id }}', $relation['foreignKey']);
 
         $params = [
             'name'    => $nameComponent,

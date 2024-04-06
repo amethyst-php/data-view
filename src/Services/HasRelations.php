@@ -53,7 +53,7 @@ trait HasRelations
 
         // BelongsTo/MorphTo
 
-        if ($relation->type === 'MorphToMany' || $relation->type === 'MorphMany') {
+        if ($relation->type === 'MorphToMany' || $relation->type === 'MorphMany' || $relation->type === 'HasMany') {
             $view = $this->dataViewManager->findOrCreateOrFail([
                 'name'      => $this->enclose($name).'.page.show.'.$enclosed,
                 'type'      => 'component',
